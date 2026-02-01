@@ -1,0 +1,30 @@
+[  
+    {
+        "bus_number":"GJ27AB9533",
+        "bus_number":"GJ27AB9534",
+        "bus_number":"GJ27AB9934",
+        "bus_name": "Shree Travels",
+        "bus_type": "AC",
+        "bus_seating_type": "SLEEPER",
+        "total_seats": 40,
+        "available_seats": 40,
+        "departure_time": "22:00",
+        "arrival_time": "06:00",
+        "price": 1500,
+        "rating":4.2,
+    },
+    {
+        "bus_number":"GJ05AC1194",
+        "bus_number":"GJ05AB1194",
+        "bus_number":"GJ05AB1994",
+        "bus_name": "Eagle Express",
+        "bus_type": "NON-AC",
+        "bus_seating_type": "SEATER",
+        "total_seats": 45,
+        "available_seats": 45,
+        "departure_time": "20:00",
+        "arrival_time": "05:30",
+        "price": 900,
+        "rating":3.5,
+    }
+]

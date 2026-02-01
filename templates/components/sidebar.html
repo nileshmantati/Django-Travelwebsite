@@ -1,0 +1,126 @@
+{% load static %}
+{% block extra_css %}
+<style>
+    .filter {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        background: #fff;
+        font-weight: 500 !important;
+    }
+
+    .filter h6 {
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .filter label {
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .filter .form-check-input:checked {
+        color: #6b7280;
+        background-color: red;
+        border-color: red;
+    }
+
+    .filter .price-tag {
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .clear {
+        color: #d84e55;
+        font-size: 0.85rem;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div>
+    <div class="filter p-3">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>Filters</h5>
+            <a href="{% url 'bus_search' %}?from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}"
+            class="btn btn-sm btn-outline-danger">
+                Clear All
+            </a>
+        </div>
+
+        <form method="get" action="{% url 'bus_search' %}">
+            <!-- Price Filter -->
+            <h6 class="mb-2">PRICE</h6>
+            <input type="hidden" name="from" value="{{ from_city }}">
+            <input type="hidden" name="to" value="{{ to_city }}">
+            <input type="hidden" name="date" value="{{ travel_date|date:'Y-m-d' }}">
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="price" value="0-500" 
+                {% if request.GET.price == "0-500" %}checked{% endif %}>
+                <label class="form-check-label">
+                    Below ₹500
+                </label>
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="price" value="500-1000"
+                {% if request.GET.price == "500-1000" %}checked{% endif %}>
+                <label class="form-check-label">
+                    ₹500 – ₹1000
+                </label>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="price" value="1000+"
+                {% if request.GET.price == "1000+" %}checked{% endif %}>
+                <label class="form-check-label">
+                    Above ₹1000
+                </label>
+            </div>
+            <hr>
+
+            <!-- Rating Filter -->
+            <h6 class="mb-2">RATING</h6>
+            {% for r in "4321" %}
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="rating" value="{{ r }}"
+                       {% if request.GET.rating == r %}checked{% endif %}>
+                <label class="form-check-label">{{ r }} ★ & above</label>
+            </div>
+            {% endfor %}
+            <hr>
+
+            <!-- Bus Type -->
+            <h6 class="mb-2">BUS TYPE</h6>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="bus_type" value="AC"
+                       {% if request.GET.bus_type == "AC" %}checked{% endif %}>
+                <label class="form-check-label">AC</label>
+            </div>
+    
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="bus_type" value="NON-AC"
+                       {% if request.GET.bus_type == "NON-AC" %}checked{% endif %}>
+                <label class="form-check-label">Non AC</label>
+            </div>
+            <hr>
+            <h6 class="mb-2">SEAT TYPE</h6>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="seat_type" value="SLEEPER"
+                       {% if request.GET.seat_type == "SLEEPER" %}checked{% endif %}>
+                <label class="form-check-label">Sleeper</label>
+            </div>
+    
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="seat_type" value="SEATER"
+                       {% if request.GET.seat_type == "SEATER" %}checked{% endif %}>
+                <label class="form-check-label">Seater</label>
+            </div>
+            <button type="submit" class="btn btn-outline-danger w-100">Apply Filters</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

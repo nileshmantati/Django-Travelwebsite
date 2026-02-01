@@ -1,0 +1,197 @@
+{% extends 'dashboard/admin_base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --glass-bg: rgba(255, 255, 255, 0.95);
+    }
+
+    .profile-wrapper {
+        background-color: #f8f9fa;
+        padding-top: 2rem;
+    }
+
+    .profile-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        background: var(--glass-bg);
+        overflow: hidden;
+    }
+
+    /* Top header color strip */
+    .profile-header-accent {
+        height: 100px;
+        background: var(--primary-gradient);
+    }
+
+    .profile-avatar-wrapper {
+        margin-top: -60px;
+        padding-left: 30px;
+    }
+
+    .profile-avatar {
+        width: 130px;
+        height: 130px;
+        border-radius: 20px;
+        /* Modern slightly rounded corners */
+        object-fit: cover;
+        border: 5px solid #fff;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .info-value {
+        color: #2d3436;
+        font-size: 1.05rem;
+        font-weight: 500;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .btn-modern {
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+
+    .btn-edit {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3);
+        color: white;
+    }
+
+    .profile-avatar {
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .avatar-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        /* Black transparent background */
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+    }
+
+    /* Hover par background aur icon dikhega */
+    .avatar-overlay:hover {
+        opacity: 1;
+    }
+
+    /* Hover par image thodi zoom hogi */
+    .position-relative:hover .profile-avatar {
+        transform: scale(1.1);
+    }
+</style>
+
+<div class="content-wrapper profile-wrapper">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <h2 class=" mb-2">Profile Details</h2>
+                <div class="card profile-card">
+                    <div class="profile-header-accent"></div>
+
+                    <div class="profile-avatar-wrapper d-flex align-items-end mb-4 flex-wrap">
+                        <div class="position-relative overflow-hidden shadow-sm"
+                            style="border-radius: 20px; width: 130px; height: 130px;">
+                            <img src="{{ user.profile.profile_img.url }}" alt="Profile"
+                                class="profile-avatar w-100 h-100" id="currentAvatar">
+
+                            <div class="avatar-overlay d-flex flex-column align-items-center justify-content-center"
+                                onclick="document.getElementById('hidden_profile_input').click();">
+                                <i class="fas fa-camera fa-lg text-white mb-1"></i>
+                                <span class="text-white small fw-bold">Change</span>
+                            </div>
+                        </div>
+                        <form id="profileImageForm" method="POST" enctype="multipart/form-data" class="d-none">
+                            {% csrf_token %}
+                            <input type="file" name="profile_img" id="hidden_profile_input" onchange="submitForm()">
+                        </form>
+
+                        <div class="ms-3 mb-2">
+                            <h3 class="fw-bold mb-0">{{ user.first_name }} {{ user.last_name }}</h3>
+                            <span class="badge fs-6 bg-soft-primary text-primary">@{{ user.username }}</span>
+                        </div>
+                    </div>
+                    <div class="d-none">
+                        {{ profile_form.profile_img }}
+                    </div>
+
+                    <div class="card-body px-4 px-md-5">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <p class="info-label mb-1"><i class="fas fa-user-circle me-2"></i>Username</p>
+                                    <p class="info-value">{{ user.username }}</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="info-label mb-1"><i class="fas fa-id-card me-2"></i>Full Name</p>
+                                    <p class="info-value">{{ user.get_full_name|default:user.username }}</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="info-label mb-1"><i class="fas fa-envelope me-2"></i>Email Address</p>
+                                    <p class="info-value">{{ user.email }}</p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <p class="info-label mb-1"><i class="fas fa-phone me-2"></i>Phone</p>
+                                    <p class="info-value">{{ user.profile.phone|default:"Not Provided" }}</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="info-label mb-1"><i class="fas fa-map-marker-alt me-2"></i>Address</p>
+                                    <p class="info-value text-capitalize">{{ user.profile.address|default:"Not Provided" }}</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="info-label mb-1"><i class="fas fa-calendar-alt me-2"></i>Member Since</p>
+                                    <p class="info-value">{{ user.date_joined|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 d-flex gap-2">
+                            <a href="{% url 'edit_profile' user.id %}" class="btn btn-modern btn-edit">
+                                <i class="fas fa-user-edit me-2"></i>Edit Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function submitForm() {
+        // Jaise hi user photo select karega, form apne aap submit ho jayega
+        document.getElementById('profileImageForm').submit();
+    }
+</script>
+{% endblock %}

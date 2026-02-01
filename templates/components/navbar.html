@@ -1,0 +1,101 @@
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    .navbar {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1030 !important;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<!-- <div class="container-md container-fluid"> -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <!-- Logo -->
+        <a class="navbar-brand fw-bold text-danger fs-3" href="/">
+            ✈️ TravelGo
+        </a>
+        <!-- Toggle Button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#travelNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Navbar Links -->
+        <div class="collapse navbar-collapse justify-content-between pt-3 pt-md-0" id="travelNavbar">
+            <ul class="navbar-nav w-75 justify-content-center me-0 me-lg-4 mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a href="/"
+                        class="nav-link justify-content-md-center {% if request.path == '/' %}active{% endif %}">
+                        Home</a>
+                </li>
+                <!-- Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link justify-content-md-center dropdown-toggle {% if request.path == '/bus/search/' and request.GET.from and request.GET.to %}
+                    active{% endif %}" href="#" data-bs-toggle="dropdown">
+                        Book
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item {% if request.path == '/bus/search/' and request.GET.from and request.GET.to %}
+                            active bg-info{% endif %}" href="/">🚌 Buses</a></li>
+                        <li><a class="dropdown-item {% if request.path == '/flights/' %}
+                            active bg-info{% endif %}" href="/flights/">✈ Flights</a></li>
+                        <li><a class="dropdown-item {% if request.path == '/hotels/' %}
+                            active bg-info{% endif %}" href="/hotels/">🏨 Hotels</a></li>
+                        <li><a class="dropdown-item {% if request.path == '/trains/' %}
+                            active bg-info{% endif %}" href="/trains/">🚆 Trains</a></li>
+                    </ul>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link justify-content-md-center" href="#">Offers</a>
+                </li> -->
+                <li class="nav-item">
+                    <a class="nav-link justify-content-md-center {% if request.path == '/contact/' %}active{% endif %}" href="/contact/">Contact</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link justify-content-md-center {% if request.path == '/bus/my-bus-booking/' %}active{% endif %}"
+                        href="/bus/my-bus-booking/">My Bookings</a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <div class="d-flex flex-column flex-md-row column-gap-2 row-gap-3 align-items-md-center">
+                {% if request.user.is_authenticated %}
+                {% if perms.auth.view_user %}
+                <a href="/user_dashboard/">
+                    <i class="fa fa-user fa-lg text-black"></i>
+                </a>
+                <span class="d-flex flex-column">
+                    <span class="fw-medium" style="font-size: .85rem; transform: translateY(5px);">Admin</span>
+                    <a href="/dashboard/" class="text-decoration-none text-black fw-semibold"
+                        style="font-size: 1.1rem;">
+                        {{request.user }}</a>
+                </span>
+                <span>
+                    {% else %}
+                    <a href="/user_dashboard/">
+                        <i class="fa fa-user fa-lg text-black"></i>
+                    </a>
+                    <small class="d-flex flex-column">
+                        <span class="fw-medium" style="font-size: .85rem; transform: translateY(5px);">Welcome</span>
+                        <!-- <span style="font-size: 1.1rem;" class="fw-semibold">{{ request.user }}</span> -->
+                        <a href="/user_dashboard/" class="text-decoration-none text-black fw-semibold"
+                            style="font-size: 1.1rem;">
+                            {{request.user }}</a>
+                    </small>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Logout</a>
+                </span>
+                {% else %}
+                <div class="">
+                    <a href="{% url 'login' %}" class="btn btn-outline-danger btn-sm">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-danger btn-sm">Sign Up</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- </div> -->
+{% endblock %}

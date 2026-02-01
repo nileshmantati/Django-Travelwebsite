@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4" style="max-width:500px;">
+    <h4>Passenger Details</h4>
+    <p><strong>Bus:</strong> {{ booking.bus.bus_name }}</p>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-2">
+            <label>Full Name</label>
+            {{ form.passenger_name }}
+        </div>
+
+        <div class="mb-2">
+            <label>Age</label>
+            {{ form.passenger_age }}
+        </div>
+
+        <div class="mb-2">
+            <label>Gender</label>
+            {{ form.passenger_gender }}
+        </div>
+
+        <div class="mb-3">
+            <label>Phone</label>
+            {{ form.passenger_phone }}
+        </div>
+        <p><strong>Seat:</strong> {{ booking.seat_number }}</p>
+        <p><strong>Price:</strong> ₹{{ booking.price }}</p>
+        <button class="btn btn-success w-100">Confirm Booking</button>
+    </form>
+</div>
+{% endblock %}

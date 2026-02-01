@@ -1,0 +1,294 @@
+{% block extra_css %}
+<style>
+    /* ===== Bus Seat Styling ===== */
+    .bus-container {
+        margin: auto;
+        background: #f8f9fa;
+        border-radius: 15px;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .driver {
+        text-align: right;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .seat {
+        width: 55px;
+        height: 55px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    .seat input {
+        display: none;
+    }
+
+    .seat.available {
+        border: 2px solid #198754;
+        color: #198754;
+        cursor: pointer;
+    }
+
+    .seat.available:hover {
+        background: #198754;
+        color: #fff;
+    }
+
+    .seat.booked {
+        background: gray;
+        color: #fff;
+        cursor: not-allowed;
+    }
+
+    .seat input:checked+span {
+        background: #198754;
+        color: #fff;
+        border-radius: 5px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .aisle {
+        width: 30px;
+    }
+
+
+    /* ===== Seat Base ===== */
+    .seat {
+        width: 55px;
+        height: 55px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.25s ease;
+        position: relative;
+    }
+
+    /* ===== Available Seat ===== */
+    .seat.available {
+        border: 2px solid #198754;
+        color: #198754;
+        cursor: pointer;
+    }
+
+    .seat.available:hover {
+        background: #198754;
+        color: #fff;
+        transform: scale(1.08);
+        box-shadow: 0 6px 15px rgba(25, 135, 84, 0.35);
+    }
+
+    /* ===== Selected Seat ===== */
+    .seat input:checked+span {
+        background: #198754;
+        color: #fff;
+        border-radius: 8px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: seatSelect 0.35s ease;
+        box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.25);
+    }
+
+    /* Selection animation */
+    @keyframes seatSelect {
+        0% {
+            transform: scale(0.85);
+            box-shadow: none;
+        }
+
+        60% {
+            transform: scale(1.15);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* ===== Booked Seat ===== */
+    .seat.booked {
+        background: #9e9e9e;
+        color: #fff;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .seat.booked::after {
+        content: "✖";
+        position: absolute;
+        font-size: 18px;
+        opacity: 0.8;
+    }
+
+    /* Fade in container */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<form method="POST" action="{% url 'bus_seats' bus.id %}">
+    {% csrf_token %}
+    {% if bus.bus_seating_type == 'SEATER' %}
+    <div class="bus-container p-3">
+        <div class="d-flex mb-4">
+            <div class="me-3 text-muted" style="writing-mode: vertical-rl;">
+                Driver 🚍
+            </div>
+            <div>
+                <div class="d-flex gap-3">
+                    {% for column in seats_layout %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for seat in column|slice:":3" %}
+                        {% if seat in booked_seats %}
+                        <div class="seat booked">{{ seat }}</div>
+                        {% else %}
+                        <label class="seat available">
+                            <input type="radio" name="seat" value="{{ seat }}" required>
+                            <span>{{ seat }}</span>
+                        </label>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex gap-3 mt-5">
+                    {% for column in seats_layout %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for seat in column|slice:"3:" %}
+                        {% if seat in booked_seats %}
+                        <div class="seat booked">{{ seat }}</div>
+                        {% else %}
+                        <label class="seat available">
+                            <input type="radio" name="seat" value="{{ seat }}">
+                            <span>{{ seat }}</span>
+                        </label>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- <div class=""> -->
+        <button type="submit" class="btn btn-danger mt-3">Continue</button>
+        <!-- </div> -->
+    </div>
+    {% else %}
+    <h2>sleeper</h2>
+    <div class="bus-container p-3">
+        <div class="d-flex mb-4">
+            <div class="me-3 text-muted" style="writing-mode: vertical-rl;">
+                <!-- Driver 🚍 -->
+                <h4 style="transform: rotate(180deg);">Upper</h4>
+            </div>
+            <div>
+                <div class="d-flex gap-3">
+                    {% for column in seats_layout_upper %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for seat in column|slice:":2" %}
+                        {% if seat in booked_seats %}
+                        <div class="seat booked">{{ seat }}</div>
+                        {% else %}
+                        <label class="seat available">
+                            <input type="radio" name="seat" value="{{ seat }}" required>
+                            <span>{{ seat }}</span>
+                        </label>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex gap-3 mt-5">
+                    {% for column in seats_layout_upper %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for seat in column|slice:"2:" %}
+                        {% if seat in booked_seats %}
+                        <div class="seat booked">{{ seat }}</div>
+                        {% else %}
+                        <label class="seat available">
+                            <input type="radio" name="seat" value="{{ seat }}">
+                            <span>{{ seat }}</span>
+                        </label>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- <div class=""> -->
+        <button type="submit" class="btn btn-danger mt-3">Continue</button>
+        <!-- </div> -->
+    </div>
+    <div class="bus-container p-3">
+        <div class="d-flex mb-4">
+            <div class="me-3 text-muted d-flex justify-content-between align-items-center"
+                style="writing-mode: vertical-rl;">
+                Driver 🚍
+                <h4 style="transform: rotate(180deg);">Lower</h4>
+            </div>
+            <div>
+                <div class="d-flex gap-3">
+                    {% for column in seats_layout_lower %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for seat in column|slice:":2" %}
+                        {% if seat in booked_seats %}
+                        <div class="seat booked">{{ seat }}</div>
+                        {% else %}
+                        <label class="seat available">
+                            <input type="radio" name="seat" value="{{ seat }}" required>
+                            <span>{{ seat }}</span>
+                        </label>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex gap-3 mt-5">
+                    {% for column in seats_layout_lower %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for seat in column|slice:"2:" %}
+                        {% if seat in booked_seats %}
+                        <div class="seat booked">{{ seat }}</div>
+                        {% else %}
+                        <label class="seat available">
+                            <input type="radio" name="seat" value="{{ seat }}">
+                            <span>{{ seat }}</span>
+                        </label>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- <div class=""> -->
+        <button type="submit" class="btn btn-danger mt-3">Continue</button>
+        <!-- </div> -->
+    </div>
+    {% endif %}
+</form>
+{% endblock %}

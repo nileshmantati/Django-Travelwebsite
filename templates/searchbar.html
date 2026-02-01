@@ -1,0 +1,172 @@
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="main_search_container d-flex justify-content-center align-items-center">
+    <div class="search_bg"></div>
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="bg-white rounded-4 shadow p-3 p-md-4 w-100" style="max-width: 80%;">
+            <!-- Tabs -->
+            <div class="d-flex flex-wrap justify-content-start mb-3 column-gap-5 row-gap-3 mb-4">
+                <a href="{% url 'home' %}"
+                    class="fw-semibold text-decoration-none {% if '/' == request.path %} border-bottom border-4 border-danger text-black fw-bold {% else %} text-danger text-muted {% endif %} pb-2 d-flex align-items-center gap-1">
+                    <i class="bi bi-bus-front-fill fs-3"></i> Buses
+                </a>
+                <a href="{% url 'flight_booking' %}" class="fw-semibold text-decoration-none d-flex align-items-center gap-1 {% if '/flights' == request.path %} border-bottom border-4 border-danger text-black fw-bold {% else %} text-danger text-muted {% endif %}">
+                    <i class="bi bi-airplane fs-3"></i> Flights
+                </a>
+                <a href="{% url 'train_booking' %}" class="fw-semibold text-decoration-none d-flex align-items-center gap-1 {% if '/trains' == request.path %} border-bottom border-4 border-danger text-black fw-bold {% else %} text-danger text-muted {% endif %}">
+                    <i class="bi bi-train-front fs-3"></i> Trains
+                </a>
+                <a href="{% url 'hotel_booking' %}" class="fw-semibold text-decoration-none d-flex align-items-center gap-1 {% if '/hotels' == request.path %} border-bottom border-4 border-danger text-black fw-bold {% else %} text-danger text-muted {% endif %}">
+                    <i class="bi bi-building fs-3"></i> Hotels
+                </a>
+            </div>
+
+            <!-- Search Form -->
+            <form method="get" action="{% url 'bus_search' %}">
+                <div class="row g-2 g-md-0 border rounded-3 bg-light align-items-center position-relative">
+
+                    <!-- FROM -->
+                    <div class="col-12 col-md">
+                        <div class="position-relative d-flex justify-content-center align-items-center ps-3">
+                            <i class="bi bi-geo-alt"></i>
+                            <input type="text" id="fromCity" name="from" value="{{ from_city }}"
+                                class="form-control border-0 shadow-none bg-transparent swap-input"
+                                placeholder="Leaving From" autocomplete="off" onkeyup="filterCities(this, 'fromList')">
+                            <ul class="city-dropdown" id="fromList"></ul>
+                        </div>
+                    </div>
+
+                    <!-- SWAP BUTTON -->
+                    <div class="col-12 col-md-auto d-flex justify-content-center align-items-center my-2 my-md-0">
+                        <button type="button" class="btn btn-light rounded-circle swap-btn" onclick="swapCities(this)">
+                            <i class="bi bi-arrow-left-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- TO -->
+                    <div class="col-12 col-sm">
+                        <div class="position-relative d-flex justify-content-center align-items-center ps-3">
+                            <i class="bi bi-geo-alt"></i>
+                            <input type="text" id="toCity" name="to" value="{{ to_city }}"
+                                class="form-control border-0 shadow-none bg-transparent swap-input"
+                                placeholder="Going To" autocomplete="off" onkeyup="filterCities(this, 'toList')">
+                            <ul class="city-dropdown" id="toList"></ul>
+                        </div>
+                    </div>
+
+                    <!-- DATE -->
+                    <div class="col-12 col-md border-start border-end">
+                        <label for="date" class="fw-bold text-muted ms-3" style="font-size: .8rem;">Departure</label>
+                        <div class="d-flex align-items-center gap-2 px-3 pb-2">
+                            <i class="bi bi-calendar-event"></i>
+                            <input type="date" name="date" id="travelDate"
+                                value="{% if travel_date %}{{ travel_date|date:'Y-m-d' }}{% else %}{% now 'Y-m-d' %}{% endif %}"
+                                min="{% now 'Y-m-d' %}" class="form-control border-0 shadow-none bg-transparent">
+                        </div>
+                    </div>
+
+                    <!-- TODAY -->
+                    <div class="col-12 col-md-6 col-lg-auto border-start border-end">
+                        <button type="button" class="btn btn-light fw-semibold w-100"
+                            onclick="setToday()">Today</button>
+                    </div>
+
+                    <!-- TOMORROW -->
+                    <div class="col-12 col-md-6 col-lg-auto">
+                        <button type="button" class="btn btn-light fw-semibold w-100"
+                            onclick="setTomorrow()">Tomorrow</button>
+                    </div>
+
+                    <!-- SEARCH -->
+                    <div class="col-12 col-sm-auto ms-auto">
+                        <button type="submit" class="btn btn-danger search_btn fw-bold w-100 px-4">
+                            Search <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setToday() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('travelDate').value = today;
+    }
+
+    function setTomorrow() {
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        document.getElementById('travelDate').value = d.toISOString().split('T')[0];
+    }
+
+
+    function swapCities(btn) {
+        const from = document.getElementById('fromCity');
+        const to = document.getElementById('toCity');
+        btn.classList.remove("bounce");
+        void btn.offsetWidth;
+        btn.classList.add("bounce");
+        btn.classList.add("rotate");
+        from.classList.add('swap-out');
+        to.classList.add('swap-in');
+
+        setTimeout(() => {
+            [from.value, to.value] = [to.value, from.value];
+
+            from.classList.remove('swap-out');
+            to.classList.remove('swap-in');
+            btn.classList.remove('rotate');
+        }, 350);
+    }
+
+
+    const cities = [
+        "Mumbai", "Pune", "Delhi", "Bangalore", "Chennai",
+        "Hyderabad", "Ahmedabad", "Jaipur", "Surat", "Indore",
+        "Bhopal", "Nagpur", "Kolhapur", "Satara", "Nashik"
+    ];
+
+    function filterCities(input, listId) {
+        const list = document.getElementById(listId);
+        const value = input.value.toLowerCase();
+
+        list.innerHTML = "";
+        if (!value) {
+            list.style.display = "none";
+            return;
+        }
+
+        cities
+            .filter(city => city.toLowerCase().includes(value))
+            .forEach(city => {
+                const li = document.createElement("li");
+                li.textContent = city;
+                li.onclick = () => {
+                    input.value = city;
+                    list.style.display = "none";
+                };
+                list.appendChild(li);
+            });
+
+        list.style.display = "block";
+    }
+
+    document.addEventListener("click", e => {
+        if (!e.target.closest(".floating-group")) {
+            document.querySelectorAll(".city-dropdown")
+                .forEach(d => d.style.display = "none");
+        }
+    });
+
+</script>
+
+{% endblock %}

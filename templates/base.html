@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Website</title>
+    {% block extra_css %}{% endblock %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+
+<body>
+    {% include "components/navbar.html" %}
+
+    {% block content %}
+
+    {% endblock %}
+
+    {% include "components/footer.html" %}
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Toastify JS -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    {% if messages %}
+    <script>
+        {% for m in messages %}
+        {% if m.tags == 'success' %}
+        var bg = "green";
+        {% elif m.tags == 'error' %}
+        var bg = "red";
+        {% else %}
+        var bg = "blue";
+        {% endif %}
+
+        Toastify({
+            text: "{{ m }}",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: bg,
+            close: true,
+        }).showToast();
+        {% endfor %}
+    </script>
+    {% endif %}
+
+</body>
+
+</html>

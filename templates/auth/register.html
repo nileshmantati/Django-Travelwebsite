@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Cause:wght@100..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Heebo:wght@100..900&family=League+Spartan:wght@100..900&family=Londrina+Solid:wght@100;300;400;900&family=Lora:ital,wght@0,400..700;1,400..700&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Pacifico&family=Playwrite+AU+SA:wght@100..400&family=Playwrite+HU:wght@100..400&family=Prata&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Winky+Rough:ital,wght@0,300..900;1,300..900&display=swap"
+    rel="stylesheet">
+<style>
+    .register-title {
+        /* font-family: "Lora", serif; */
+        font-family: "Playwrite AU SA", cursive;
+        /* font-family: "Winky Rough", sans-serif; */
+        /* font-size: 28px; */
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="register-card">
+        <h3 class="text-center mb-4 register-title">Create Account</h3>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="name" id="name" placeholder="Full Name" required>
+                <label for="name">Full Name</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com"
+                    required>
+                <label for="email">Email Address</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone" required>
+                <label for="phone">Phone Number</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                    required>
+                <label for="password">Password</label>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input type="password" class="form-control" id="confirmPassword" name="confirmpassword"
+                    placeholder="Confirm Password" required>
+                <label for="confirmPassword">Confirm Password</label>
+            </div>
+
+            <button type="submit" class="btn w-100 btn-custom mb-3">Register</button>
+
+            <p class="text-center text-black">
+                Already have an account?
+                <a href="{% url 'login' %}" class="text-decoration-none login_btn">Login</a>
+            </p>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

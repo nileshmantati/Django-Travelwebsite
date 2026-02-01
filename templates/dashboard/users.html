@@ -1,0 +1,216 @@
+{% extends 'dashboard/admin_base.html' %}
+
+{% block content %}
+
+<style>
+    .bus-card {
+        border: none;
+        background: #ffffff;
+    }
+
+    .bus-table thead th {
+        font-size: 14.5px;
+        text-transform: uppercase;
+        color: #6c757d;
+        background: #f8f9fa;
+        padding: 15px;
+        border: none;
+    }
+
+    .bus-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .bus-table tbody tr:hover {
+        background: rgba(13, 110, 253, 0.06) !important;
+        transform: translateY(-1px) scale(1.003);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+    }
+
+    tr,
+    th,
+    td {
+        background-color: transparent !important;
+    }
+
+    .user-avatar {
+        width: 35px;
+        height: 35px;
+        background: #e7f1ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: bold;
+    }
+</style>
+
+<div class="content-wrapper p-3">
+    <div class="card bus-card shadow-sm">
+        <div class="card-header bg-white border-0 pt-4 pb-2">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <h4 class="mb-0 fw-bold text-dark">
+                    <i class="bi bi-people-fill text-danger me-2"></i>Users Management
+                </h4>
+
+                <div class="d-flex gap-2">
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="UserSearch" class="form-control bg-light border-start-0"
+                            placeholder="Search user...">
+                    </div>
+                    {% if request.user.is_superuser %}
+                    <a href="/dashboard/add_user/" class="btn btn-danger btn-sm">
+                        + Add New User
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table bus-table align-middle mb-0 mt-2" id="UserTable">
+                    <thead class="bg-body-secondary">
+                        <tr>
+                            <th>#</th>
+                            <th>User Info</th>
+                            <th>Email</th>
+                            <th>Staff Status</th>
+                            <th>Superuser</th>
+                            <th>Last Login</th>
+                            <th>Date Joined</th>
+                            <th>Status</th>
+                            {% if request.user.is_superuser %}
+                            <th class="text-end">Action</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td class="text-muted">{{ forloop.counter }}</td>
+
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-2">{{ user.username|slice:":1"|upper }}</div>
+                                    <div>
+                                        <div class="fw-semibold text-dark">{{ user.username }}</div>
+                                        <small class="text-muted">ID: #{{ user.id }}</small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>{{ user.email|default:"---" }}</td>
+
+                            <td>
+                                {% if user.is_staff %}
+                                <span class="badge bg-info-subtle text-info">Staff</span>
+                                {% else %}
+                                <span class="badge bg-light text-muted border">Customer</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if user.is_superuser %}
+                                <span class="badge bg-dark">Yes</span>
+                                {% else %}
+                                <span class="badge bg-light text-muted border">No</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="small">{{ user.last_login|date:"d M Y, h:i A"|default:"Never" }}</td>
+                            <td class="small">{{ user.date_joined|date:"d M Y" }}</td>
+
+                            <td>
+                                {% if user.is_active %}
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger-subtle text-danger">Suspended</span>
+                                {% endif %}
+                            </td>
+
+                            {% if request.user.is_superuser %}
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'edit_user' user.id %}">
+                                                ✏️ Edit (Admin)
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="dropdown-item text-danger"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                data-userid="{{ user.id }}" data-username="{{ user.username }}">
+                                                <i class="bi bi-trash mx-1"></i> Delete User
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                🚫 No Users found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle mr-2"></i> Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="mb-0">Are you sure you want to delete user <strong id="userNameDisplay"></strong>?</p>
+                <small class="text-muted">Deleting a user may affect their bookings history.</small>
+            </div>
+            <div class="modal-footer bg-light border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger px-4 shadow-sm">Confirm Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search Script
+    document.getElementById('UserSearch').addEventListener('keyup', function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#UserTable tbody tr');
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+
+    // Modal Script
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const userId = button.getAttribute('data-userid');
+        const username = button.getAttribute('data-username');
+        document.getElementById('userNameDisplay').textContent = username;
+        const form = document.getElementById('deleteForm');
+        form.action = `/dashboard/delete_user/${userId}/`; // Ensure this URL exists in views
+    });
+</script>
+{% endblock %}

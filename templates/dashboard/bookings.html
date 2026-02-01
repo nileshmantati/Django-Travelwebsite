@@ -1,0 +1,165 @@
+{% extends 'dashboard/admin_base.html' %}
+{% block content %}
+
+<style>
+    .bus-card {
+        /* border-radius: 16px; */
+        border: none;
+        background: #ffffff;
+    }
+
+    .bus-table thead th {
+        font-size: 14.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        background: #f8f9fa;
+        padding: 15px;
+        border: none;
+    }
+
+    .bus-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    tr,
+    th,
+    td {
+        background-color: transparent !important;
+    }
+
+    .price-badge {
+        background: #e7f1ff;
+        color: rgb(255, 52, 52);
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+
+    .bus-table tbody tr:hover {
+        background: rgba(13, 110, 253, 0.06) !important;
+        transform: translateY(-1px) scale(1.003);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+    }
+</style>
+
+<div class="content-wrapper p-3">
+    <div class="card bus-card shadow-sm">
+        <div class="card-header bg-white border-0 pt-4 pb-2">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <h4 class="mb-0 fw-bold text-dark">
+                    <i class="bi bi-ticket-perforated-fill text-danger me-2"></i>Bookings Management
+                </h4>
+
+                <div class="d-flex gap-2">
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="bookingSearch" class="form-control bg-light border-start-0"
+                            placeholder="Search passenger...">
+                    </div>
+                    <!-- <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-funnel"></i></button> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table bus-table align-middle mb-0 mt-2" id="bookingTable">
+                    <thead class="bg-body-secondary">
+                        <tr>
+                            <th class="ps-3">#</th>
+                            <th>Passenger & User</th>
+                            <th>Bus / Route</th>
+                            <th>Schedule</th>
+                            <th>Seat</th>
+                            <th>Fare</th>
+                            <th>Status</th>
+                            <th>Booked On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td class="text-muted ps-3">{{ forloop.counter }}</td>
+
+                            <td>
+                                <div class="fw-bold text-dark">{{ booking.passenger_name }}</div>
+                                <div class="small text-muted">
+                                    <i class="bi bi-person-circle"></i> {{ booking.user.username }} | <i
+                                        class="bi bi-telephone"></i> {{ booking.passenger_phone }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="fw-bold text-primary">{{ booking.bus.bus_name }}</div>
+                                <div class="small text-muted text-truncate" style="max-width: 180px;">
+                                    {{ booking.bus.source.name }} <i class="bi bi-arrow-right mx-1"></i> {{ booking.bus.destination.name }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="small fw-bold text-dark">{{ booking.bus.travel_date|date:"d M, Y" }}</div>
+                                <div class="badge bg-light text-dark fw-normal border" style="font-size: 10px;">
+                                    <i class="bi bi-clock me-1"></i>{{ booking.bus.departure_time|date:"h:i A" }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="text-center bg-light rounded py-1 border" style="width: 40px;">
+                                    <small class="fw-bold">{{ booking.seat_number }}</small>
+                                </div>
+                            </td>
+
+                            <td><span class="price-badge">₹{{ booking.price }}</span></td>
+
+                            <td>
+                                {% if booking.booking_status == 'CONFIRMED' %}
+                                <span class="badge bg-success-subtle text-success"><span
+                                        class="status-dot bg-success"></span>Confirmed</span>
+                                {% elif booking.booking_status == 'PENDING' %}
+                                <span class="badge bg-warning-subtle text-warning"><span
+                                        class="status-dot bg-warning"></span>Pending</span>
+                                {% else %}
+                                <span class="badge bg-danger-subtle text-danger"><span
+                                        class="status-dot bg-danger"></span>Cancelled</span>
+                                {% endif %}
+                                <div class="small text-muted mt-1">
+                                    Pay: {{ booking.payment_status|title }}</div>
+                            </td>
+
+                            <td class="small text-muted">
+                                {{ booking.booked_at|date:"d/m/y" }}<br>
+                                {{ booking.booked_at|date:"H:i" }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="py-4">
+                                    <i class="bi bi-inbox text-muted display-4"></i>
+                                    <p class="text-muted mt-2">No bookings records found.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('bookingSearch').addEventListener('keyup', function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#bookingTable tbody tr');
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+</script>
+
+{% endblock %}

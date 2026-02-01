@@ -1,0 +1,245 @@
+{% extends 'dashboard/admin_base.html' %}
+
+{% block content %}
+
+<style>
+    .bus-card {
+        /* border-radius: 16px; */
+        border: none;
+        background: #ffffff;
+    }
+
+    .bus-table thead th {
+        font-size: 14.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        background: #f8f9fa;
+        padding: 15px;
+        border: none;
+    }
+
+    .bus-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    tr,
+    th,
+    td {
+        background-color: transparent !important;
+    }
+
+    .bus-table tbody tr:hover {
+        background: rgba(13, 110, 253, 0.06) !important;
+        transform: translateY(-1px) scale(1.003);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+    }
+
+
+    .price-badge {
+        background: #e7f1ff;
+        color: rgb(255, 52, 52);
+        font-weight: 700;
+        padding: 6px 10px;
+        border-radius: 10px;
+        font-size: 13px;
+    }
+
+    .dropdown button {
+        background: #ffffff;
+        z-index: 2 !important;
+    }
+
+    .dropdown-menu {
+        z-index: 100 !important;
+    }
+</style>
+
+<div class="content-wrapper p-3">
+    <div class="card bus-card shadow-sm">
+        <div class="card-header bg-white border-0 pt-4 pb-2">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <h4 class="mb-0 fw-bold text-dark">
+                    <i class="bi bi-ticket-perforated-fill text-danger me-2"></i>Buses Management
+                </h4>
+
+                <div class="d-flex gap-2">
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="BusSearch" class="form-control bg-light border-start-0"
+                            placeholder="Search bus...">
+                    </div>
+                    <a href="{% url 'add_bus' %}" class="btn btn-danger btn-sm">
+                        + Add New Bus
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table bus-table align-middle mb-0 mt-2" id="BusTable">
+                    <thead class="bg-body-secondary">
+                        <tr>
+                            <th>#</th>
+                            <th>Bus</th>
+                            <th>Route</th>
+                            <th>Date & Time</th>
+                            <th>Seats</th>
+                            <th>Type</th>
+                            <th>Rating</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+                        {% for bus in buses %}
+                        <tr>
+                            <td class="text-muted">{{ forloop.counter }}</td>
+
+                            <td>
+                                <div class="fw-semibold">{{ bus.bus_name }}</div>
+                                <small class="text-muted">{{ bus.bus_number }}</small>
+                            </td>
+
+                            <td>
+                                {{ bus.source.name }}
+                                <i class="bi bi-arrow-right mx-1"></i>
+                                {{ bus.destination.name }}
+                            </td>
+
+                            <td>
+                                <div>{{ bus.travel_date|date:"d M Y" }}</div>
+                                <small class="text-muted">
+                                    {{ bus.departure_time|date:"h:i A" }} – {{ bus.arrival_time|date:"h:i A" }}
+                                </small>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-light text-dark">
+                                    🪑 {{ bus.available_seats }}/{{ bus.total_seats }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-info-subtle text-info">{{ bus.bus_type }}</span>
+                                <span class="badge bg-secondary-subtle text-secondary">{{ bus.bus_seating_type }}</span>
+                            </td>
+
+                            <td>⭐ {{ bus.rating }}</td>
+
+                            <td>
+                                <span class="price-badge">₹ {{ bus.price }}</span>
+                            </td>
+
+                            <td>
+                                {% if bus.is_active %}
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger-subtle text-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'edit_bus' bus.id %}">
+                                                ✏️ Edit
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'change_bus_status' bus.id %}">
+                                                {% if bus.is_active %}
+                                                <i class="bi bi-toggle-off text-danger mr-2"></i> Deactivate
+                                                {% else %}
+                                                <i class="bi bi-toggle-on text-success mr-2"></i> Activate
+                                                {% endif %}
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal" data-busid="{{ bus.id }}"
+                                                data-busname="{{ bus.bus_name }}">
+                                                <i class="bi bi-trash mx-1  "></i> Delete
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10" class="text-center py-5 text-muted">
+                                🚫 No buses found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle mr-2"></i> Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="mb-0">Are you sure you want to delete <strong id="busNameDisplay"></strong>?</p>
+                <small class="text-muted">This action cannot be undone.</small>
+            </div>
+            <div class="modal-footer bg-light border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger px-4 shadow-sm">Delete Permanently</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('BusSearch').addEventListener('keyup', function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#BusTable tbody tr');
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+</script>
+<script>
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        // Button jisne modal trigger kiya
+        const button = event.relatedTarget;
+
+        // Data attributes fetch karein
+        const busId = button.getAttribute('data-busid');
+        const busName = button.getAttribute('data-busname');
+
+        // Modal ka content update karein
+        document.getElementById('busNameDisplay').textContent = busName;
+
+        // Form action URL update karein (yahan apna delete URL pattern likhein)
+        const form = document.getElementById('deleteForm');
+        form.action = `/dashboard/delete_bus/${busId}/`;
+    });
+</script>
+{% endblock %}

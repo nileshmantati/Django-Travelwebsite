@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Cause:wght@100..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Heebo:wght@100..900&family=League+Spartan:wght@100..900&family=Londrina+Solid:wght@100;300;400;900&family=Lora:ital,wght@0,400..700;1,400..700&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Pacifico&family=Playwrite+AU+SA:wght@100..400&family=Playwrite+HU:wght@100..400&family=Prata&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Winky+Rough:ital,wght@0,300..900;1,300..900&display=swap"
+    rel="stylesheet">
+<style>
+    .login-title {
+        /* font-family: "Lora", serif; */
+        font-family: "Playwrite AU SA", cursive;
+        /* font-family: "Winky Rough", sans-serif; */
+        /* font-size: 28px; */
+        font-weight: 600;
+    }
+
+    .error-text {
+        font-size: 0.8rem;
+        margin-top: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="login-container">
+
+        <form method="post">
+            {% csrf_token %}
+
+            <h2 class="login-title">Login Form</h2>
+
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+            {% for field in form %}
+            <div class="input-group-custom mb-3">
+                <label class="ms-2">{{ field.label }}</label>
+                {{ field }}
+
+                {% for error in field.errors %}
+                <div class="text-danger error-text ms-2">
+                    {{ error }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+            <div class="text-danger small text-center mb-2">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <button type="submit" class="btn-custom w-100 mt-2">
+                Login
+            </button>
+
+            <div class="links mt-3">
+                <p class="ms-3">
+                    <a href="#">Forgot Password?</a>
+                </p>
+                <p class="text-center">
+                    Don't have an account?
+                    <a href="{% url 'register' %}">Create one</a>
+                </p>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+{% endblock %}
