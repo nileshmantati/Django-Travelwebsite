@@ -1,0 +1,275 @@
+.nav-link {
+    color: #5E616E !important;
+    font-size: 1.1rem !important;
+    font-weight: 400 !important;
+    display: flex !important;
+    align-items: center;
+    margin-bottom: 0px !important;
+    column-gap: 5px;
+}
+
+.active {
+    font-weight: 700 !important;
+    color: red !important;
+}
+.search_bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-image: url('../images/web-new-bg.jfif');
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1;
+}
+
+.swap_logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+:root {
+    --rb-red: #d84e55;
+    --rb-red-dark: #b93b42;
+    --rb-green: #1ca54c;
+    --rb-orange: #f57c00;
+    --rb-blue: #2f80ed;
+    --rb-gray: #6b7280;
+    --rb-light-gray: #f8f9fa;
+}
+
+/* Card */
+.rb-card {
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+/* Assured badge */
+.rb-assured {
+    background: #eef5ff;
+    color: #1d4ed8;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 5px 12px;
+}
+
+/* Offer badge */
+.rb-offer {
+    background: #fff3cd;
+    color: #92400e;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* Bus name */
+.rb-bus-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+/* Bus type */
+.rb-bus-type {
+    color: var(--rb-green);
+    font-size: 0.9rem;
+}
+
+/* Rating */
+.rb-rating {
+    background: var(--rb-green);
+    color: #fff;
+    padding: 2px 6px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+/* Duration pill */
+.rb-duration {
+    background: #f1f5f9;
+    color: #374151;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+/* Price */
+.rb-price {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+/* Select Seats button */
+.rb-btn {
+    background: var(--rb-red);
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.rb-btn:hover {
+    background: var(--rb-red-dark);
+    color: #fff;
+}
+
+/* Seats left */
+.rb-seats-left {
+    color: var(--rb-orange);
+    font-weight: 600;
+}
+
+/* Bottom links */
+.rb-link {
+    color: var(--rb-blue);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.rb-link:hover {
+    text-decoration: underline;
+}
+
+.left_seats {
+    font-size: .8rem !important;
+    color: #b93b42 !important;
+}
+
+.main_search_container {
+    /* height: 400px !important; */
+    min-height: 400px;
+    position: relative;
+    padding: 60px 0;
+}
+
+.swap-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.swap-btn {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid #dee2e6;
+    background: #fff;
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.swap-btn:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+.search_btn {
+    height: 100% !important;
+}
+
+.swap-btn i {
+    transition: transform 0.4s ease;
+}
+
+.swap-btn.rotate i {
+    transform: rotate(180deg);
+}
+
+.swap-input {
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.swap-out {
+    transform: translateY(8px);
+    opacity: 0;
+}
+
+.swap-in {
+    transform: translateY(-8px);
+    opacity: 0;
+}
+
+
+/* dropdown css */
+.city-dropdown {
+    list-style: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 5px 0;
+    margin: 4px 0 0;
+    z-index: 999;
+    display: none;
+}
+
+.city-dropdown li {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.city-dropdown li:hover {
+    background: #f8f9fa;
+}
+
+
+
+/* Bounce animation */
+@keyframes swapBounce {
+    0% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(0.85);
+    }
+
+    60% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Apply bounce */
+.swap-btn.bounce {
+    animation: swapBounce 0.35s ease;
+}
+
+/* Smooth icon rotation */
+.swap-btn i {
+    transition: transform 0.35s ease;
+}
+
+.swap-btn.rotate i {
+    transform: rotate(180deg);
+}
+
+.swap-btn {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.search-item {
+    transition: all 0.2s ease-in-out;
+}
+
+.search-item:hover {
+    background-color: #fff5f5;
+    transform: translateX(3px);
+}
+
+.recent_date{
+    font-size: .8rem;
+}
