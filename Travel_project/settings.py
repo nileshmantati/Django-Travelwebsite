@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -138,17 +141,19 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('dbbmuoe7o'),
-    'API_KEY': os.environ.get('728478623939565'),
-    'API_SECRET': os.environ.get('rIcRpacSq_PwG1pOUjvfQtNgsJ4'),
-}
+# cloudinary.config(
+#     cloud_name="dbbmuoe7o",
+#     api_key="728478623939565",
+#     api_secret="rIcRpacSq_PwG1pOUjvfQtNgsJ4",
+#     secure=True
+# )
+
 
 
 MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CRONJOBS = [
     ('0 0 * * 0', 'bus_app.cron.insert_weekly_data'),
