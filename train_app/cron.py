@@ -1,11 +1,9 @@
 from .models import TrainModel, TrainCoach, City
 from datetime import datetime, timedelta
 from django.utils import timezone
-# ... baaki imports wahi rahenge ...
 
 def insert_weekly_data():
     today = timezone.localdate()
-    # Purani trains inactive karna
     TrainModel.objects.filter(travel_date__lt=today, is_active=True).update(is_active=False)
 
     routes = [
@@ -14,7 +12,7 @@ def insert_weekly_data():
         ("Pune", "Delhi"),
     ]
 
-    # Train ki general details
+
     train_data = [
         {
             "train_name": "Rajdhani Express",

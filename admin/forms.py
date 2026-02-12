@@ -2,6 +2,7 @@ from django import forms
 from bus_app.models import BusModel,City
 from train_app.models import TrainModel, TrainCoach
 from django.contrib.auth.models import User
+import ast
 
 class BusForm(forms.ModelForm):
     class Meta:
@@ -48,13 +49,13 @@ class TrainForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(attrs={
             'class': 'list-unstyled d-flex flex-wrap gap-3'
         }),
-        help_text="Select days when this train operates"
+        help_text="Select days when this train operates",
+        required=False
     )
     class Meta:
         model = TrainModel
         fields = ['train_number', 'train_name', 'source', 'destination', 
                   'departure_time', 'arrival_time', 'travel_date', 'runs_on', 'is_active']
-        exclude = ['runs_on']
         
         widgets = {
             'train_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 12121'}),
@@ -62,8 +63,7 @@ class TrainForm(forms.ModelForm):
             
             'source': forms.Select(attrs={'class': 'form-control'}),
             'destination': forms.Select(attrs={'class': 'form-control'}),
-
-            # Date aur Time ke liye native pickers
+            
             'travel_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'departure_time': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
             'arrival_time': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
@@ -72,9 +72,18 @@ class TrainForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input ms-2'}),
         }
         
-        def clean_runs_on(self):
-            data = self.cleaned_data.get('runs_on')
-            return ", ".join(data) if data else ""
+    def __init__(self, *args, **kwargs):
+        super(TrainForm, self).__init__(*args, **kwargs)
+        if self.instance and self.instance.runs_on:
+            clean_str = self.instance.runs_on.replace("[", "").replace("]", "").replace("'", "").replace('"', "")
+            self.initial['runs_on'] = [day.strip() for day in self.instance.runs_on.split(',')]
+            print("Initial runs_on set to:", self.initial['runs_on'])
+
+    def clean_runs_on(self):
+        data = self.cleaned_data.get('runs_on')
+        if isinstance(data, list):
+            return ", ".join(data)
+        return data
         
 class TrainCoachForm(forms.ModelForm):
     class Meta:

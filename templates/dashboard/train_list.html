@@ -30,7 +30,6 @@
         z-index: 2 !important;
     }
 
-    /* Dropdown ko stable rakhne ke liye */
     .dropdown-menu {
         z-index: 1050 !important;
         border: none !important;
@@ -126,9 +125,9 @@
                                         <i class="bi bi-three-dots-vertical"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                        <li><a class="dropdown-item" href="#">✏️ Edit</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'edit_train' train.id %}">✏️ Edit</a></li>
                                         <li>
-                                            <a class="dropdown-item" href="#">
+                                            <a class="dropdown-item" href="{% url 'change_train_status' train.id %}">
                                                 {% if train.is_active %}
                                                 <i class="bi bi-toggle-off text-danger mr-2"></i> Deactivate
                                                 {% else %}
@@ -195,7 +194,7 @@
         const trainName = button.getAttribute('data-trainname');
         document.getElementById('trainNameDisplay').textContent = trainName;
         const form = document.getElementById('deleteForm');
-        form.action = `/dashboard/delete_train/${trainId}/`;
+        form.action = `/dashboard/train/delete_train/${trainId}/`;
     });
 </script>
 {% endblock %}

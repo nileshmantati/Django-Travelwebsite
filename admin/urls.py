@@ -16,11 +16,17 @@ urlpatterns = [
     path('edit_bus/<int:pk>/', views.edit_bus, name="edit_bus"),
     path('delete_bus/<int:pk>/', views.delete_bus, name="delete_bus"),
     path('change_bus_status/<int:pk>/', views.change_bus_status, name='change_bus_status'),
-    path('bookings/', views.bookings, name="bookings"),
     
     # Train Urls
     path('trains/',views.train_list,name="train_list"),
     path('train/add_train/',views.add_train,name="add_train"),
+    path('train/edit_train/<int:pk>/',views.edit_train,name="edit_train"),
+    path('train/change_train_status/<int:pk>/', views.change_train_status, name='change_train_status'),
+    path('train/delete_train/<int:pk>/',views.delete_train,name="delete_train"),
+    
+    # All Bokkings
+    path('bus_bookings/', views.bus_bookings, name="bus_bookings"),
+    path('train_bookings/', views.train_bookings, name="train_bookings"),
     
     # Users urls
     path('users/', views.users, name="users"),

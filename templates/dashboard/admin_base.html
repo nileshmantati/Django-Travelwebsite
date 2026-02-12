@@ -122,7 +122,7 @@
         {% endif %}
 
         Toastify({
-            text: "{{ m }}",
+            text: "{{ m|safe }}",
             duration: 3000,
             gravity: "top",
             position: "right",
