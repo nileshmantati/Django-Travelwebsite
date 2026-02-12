@@ -46,11 +46,26 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="/dashboard/cities/"
+                        class="nav-link {% if request.path == '/dashboard/cities/' %}active{% endif %}">
+                        <i class="bi bi-geo-alt-fill mx-2"></i>
+                        <p>Cities</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="/dashboard/buses/"
                         class="nav-link {% if request.path == '/dashboard/buses/' %}active{% endif %}"><i
                             class="bi bi-bus-front mx-2"></i>
                         <p>Buses</p>
                     </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/dashboard/trains/"
+                        class="nav-link {% if request.path == '/dashboard/trains/' %}active{% endif %}"><i
+                            class="bi bi-train-front mx-2"></i>
+                        <p>Trains</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="/dashboard/bookings/"
                         class="nav-link {% if request.path == '/dashboard/bookings/' %}active{% endif %}">
@@ -72,9 +87,10 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'logout'  %}" class="nav-link"><i class="fa-solid fa-arrow-right-from-bracket mx-2"></i>Logout</a>
+                    <a href="{% url 'logout'  %}" class="nav-link"><i
+                            class="fa-solid fa-arrow-right-from-bracket mx-2"></i>Logout</a>
                 </li>
-                
+
                 {% else %}
                 <li class="nav-item">
                     <a href="/user_dashboard/"
@@ -106,7 +122,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'logout'  %}" class="nav-link"><i class="fa-solid fa-arrow-right-from-bracket mx-2"></i>Logout</a>
+                    <a href="{% url 'logout'  %}" class="nav-link"><i
+                            class="fa-solid fa-arrow-right-from-bracket mx-2"></i>Logout</a>
                 </li>
                 {% endif %}
             </ul>

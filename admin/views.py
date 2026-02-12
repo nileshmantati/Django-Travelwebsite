@@ -1,6 +1,9 @@
 from django.shortcuts import render ,redirect,get_object_or_404
 from bus_app.models import BusModel,BusBooking,City
-from admin.forms import BusForm , UserForm
+from train_app.models import TrainModel,TrainCoach
+from admin.forms import BusForm , UserForm, CityForm, TrainForm, TrainCoachForm
+from django.forms import inlineformset_factory
+from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -18,7 +21,7 @@ def superuser_required(user):
         return True
     raise PermissionDenied
 
-
+# Admin Dashboard View
 @login_required
 def admin_dashboard(request):
     if not request.user.is_staff:
@@ -36,6 +39,67 @@ def admin_dashboard(request):
     }
     return render(request,'dashboard/dashboard.html',context)
 
+# City Views
+@login_required
+def city_list(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    
+    cities = City.objects.all()
+    return render(request,'dashboard/city_list.html',{'cities':cities})
+
+@login_required
+def add_city(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    
+    if request.method == 'POST':
+        form = CityForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "City added successfully!")
+            return redirect('city_list')
+        else:
+            messages.error(request, "City name cannot be empty.")
+            return redirect('add_city')
+    else:
+        form = CityForm()
+    return render(request,'dashboard/add_city.html',{'form':form,'title':'Add New City'})
+
+
+@login_required
+def edit_city(request,pk):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    
+    city = get_object_or_404(City, pk=pk)
+    if request.method == 'POST':
+        form = CityForm(request.POST,request.FILES,instance=city)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "City updated successfully!")
+            return redirect('city_list')
+        else:
+            messages.error(request, "City name cannot be empty.")
+            return redirect('edit_city')
+    else:
+        form = CityForm(instance=city)
+        
+    return render(request,'dashboard/edit_city.html',{'form':form,'title':'Edit City'})
+
+@login_required
+def delete_city(request,pk):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
+    if request.method == 'POST':
+        city = get_object_or_404(City, pk=pk)
+        cityname = city.name
+        city.delete()
+        messages.success(request, f"City '{cityname}' has been deleted successfully!")
+    return redirect('city_list')
+
+# buses Views
 @login_required
 def bus_list(request):
     if not request.user.is_staff:
@@ -104,6 +168,7 @@ def delete_bus(request,pk):
         messages.success(request, f"Bus '{bus_name}' has been deleted successfully!")
     return redirect('bus_list')
 
+# Users Views
 @login_required
 def users(request):
     if not request.user.is_staff:
@@ -162,6 +227,7 @@ def delete_user(request,pk):
         messages.success(request, f"User '{username}' has been deleted successfully!")
     return redirect('users')
 
+# Booking Views
 @login_required
 def bookings(request):
     if not request.user.is_staff:
@@ -172,6 +238,56 @@ def bookings(request):
         'bookings':bookings
     }
     return render(request,'dashboard/bookings.html',context)
+    
+# Train Views
+@login_required
+def train_list(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    trains = TrainModel.objects.prefetch_related('coaches').all()
+    context={
+        'trains':trains
+    }
+    return render(request,'dashboard/train_list.html',context)
+
+@login_required
+def add_train(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    
+    CoachFormSet = inlineformset_factory(
+        TrainModel, 
+        TrainCoach, 
+        fields=['coach_type', 'total_seats', 'available_seats', 'price'],
+        extra=1, 
+        can_delete=True,
+        widgets={
+            'coach_type': forms.Select(attrs={'class': 'form-control'}),
+            'total_seats': forms.NumberInput(attrs={'class': 'form-control'}),
+            'available_seats': forms.NumberInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+    )
+    
+    if request.method == 'POST':
+        form = TrainForm(request.POST)
+        formset = CoachFormSet(request.POST, prefix='coaches')
+
+        if form.is_valid() and formset.is_valid():
+            train_instance = form.save()
+            formset.instance = train_instance
+            formset.save()
+            return redirect('train_list')
+    else:
+        form = TrainForm()
+        formset = CoachFormSet(prefix='coaches')
+
+    return render(request, 'dashboard/add_train.html', {
+        'form': form,
+        'formset': formset
+    })
+    
+    
 
 # def product_create(request):
 #     if request.method == 'POST':

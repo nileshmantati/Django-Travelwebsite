@@ -4,6 +4,21 @@
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+    /* Active tab style */
+    .tab-link.active-tab {
+        border-bottom: 4px solid #dc3545 !important;
+        color: black !important;
+        font-weight: bold !important;
+    }
+
+    .tab-link {
+        color: black;
+        cursor: pointer;
+        /* padding-bottom: 5px; */
+        transition: all ease-in-out 100ms;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -13,25 +28,28 @@
         <div class="bg-white rounded-4 shadow p-3 p-md-4 w-100" style="max-width: 80%;">
             <!-- Tabs -->
             <div class="d-flex flex-wrap justify-content-start mb-3 column-gap-5 row-gap-3 mb-4">
-                <a href="{% url 'home' %}"
-                    class="fw-semibold text-decoration-none {% if '/' == request.path %} border-bottom border-4 border-danger text-black fw-bold {% else %} text-danger text-muted {% endif %} pb-2 d-flex align-items-center gap-1">
+                <a href="javascript:void(0)" onclick="switchSearch('bus',this)"
+                    class="fw-semibold text-decoration-none tab-link active-tab pb-2 d-flex align-items-center gap-1">
                     <i class="bi bi-bus-front-fill fs-3"></i> Buses
                 </a>
-                <a href="{% url 'flight_booking' %}" class="fw-semibold text-decoration-none d-flex align-items-center gap-1 {% if '/flights' == request.path %} border-bottom border-4 border-danger text-black fw-bold {% else %} text-danger text-muted {% endif %}">
+                <a href="javascript:void(0)" onclick="switchSearch('flight',this)"
+                    class="fw-semibold text-decoration-none tab-link d-flex align-items-center gap-1 ">
                     <i class="bi bi-airplane fs-3"></i> Flights
                 </a>
-                <a href="{% url 'train_booking' %}" class="fw-semibold text-decoration-none d-flex align-items-center gap-1 {% if '/trains' == request.path %} border-bottom border-4 border-danger text-black fw-bold {% else %} text-danger text-muted {% endif %}">
+                <a href="javascript:void(0)" onclick="switchSearch('train',this)"
+                    class="fw-semibold text-decoration-none tab-link d-flex align-items-center gap-1 ">
                     <i class="bi bi-train-front fs-3"></i> Trains
                 </a>
-                <a href="{% url 'hotel_booking' %}" class="fw-semibold text-decoration-none d-flex align-items-center gap-1 {% if '/hotels' == request.path %} border-bottom border-4 border-danger text-black fw-bold {% else %} text-danger text-muted {% endif %}">
+                <a href="javascript:void(0)" onclick="switchSearch('hotel',this)"
+                    class="fw-semibold text-decoration-none tab-link d-flex align-items-center gap-1 ">
                     <i class="bi bi-building fs-3"></i> Hotels
                 </a>
             </div>
 
             <!-- Search Form -->
-            <form method="get" action="{% url 'bus_search' %}">
+            <form method="get" action="{% url 'search' %}">
                 <div class="row g-2 g-md-0 border rounded-3 bg-light align-items-center position-relative">
-
+                    <input type="hidden" name="type" id="inputType" value="bus">
                     <!-- FROM -->
                     <div class="col-12 col-md">
                         <div class="position-relative d-flex justify-content-center align-items-center ps-3">
@@ -97,18 +115,44 @@
 </div>
 
 <script>
+    // SwitchSearch
+    function switchSearch(search_type, element) {
+        document.getElementById('inputType').value = search_type;
+        if (search_type === 'bus') {
+            document.getElementById('fromCity').placeholder = 'Leaving From';
+            document.getElementById('toCity').placeholder = 'Going To';
+        } else if (search_type === 'flight') {
+            document.getElementById('fromCity').placeholder = 'From City';
+            document.getElementById('toCity').placeholder = 'To City';
+        } else if (search_type === 'train') {
+            document.getElementById('fromCity').placeholder = 'From Station';
+            document.getElementById('toCity').placeholder = 'To Station';
+        }
+        document.querySelectorAll('.tab-link').forEach(link => {
+            link.classList.remove('active-tab');
+            link.classList.remove('text-black', 'fw-bold'); // Cleanup
+            link.classList.add('text-muted');
+        });
+
+        // 3. Add active class to current tab
+        element.classList.add('active-tab');
+        element.classList.remove('text-muted');
+    }
+
+    //  Set date to today
     function setToday() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('travelDate').value = today;
     }
 
+    // Set date to tomorrow
     function setTomorrow() {
         const d = new Date();
         d.setDate(d.getDate() + 1);
         document.getElementById('travelDate').value = d.toISOString().split('T')[0];
     }
 
-
+    // Swap cities with animation
     function swapCities(btn) {
         const from = document.getElementById('fromCity');
         const to = document.getElementById('toCity');
@@ -128,12 +172,13 @@
         }, 350);
     }
 
-
+    // City autocomplete
     const cities = [
         "Mumbai", "Pune", "Delhi", "Bangalore", "Chennai",
         "Hyderabad", "Ahmedabad", "Jaipur", "Surat", "Indore",
         "Bhopal", "Nagpur", "Kolhapur", "Satara", "Nashik"
     ];
+
 
     function filterCities(input, listId) {
         const list = document.getElementById(listId);

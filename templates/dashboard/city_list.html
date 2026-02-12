@@ -1,0 +1,196 @@
+{% extends 'dashboard/admin_base.html' %}
+
+{% block content %}
+
+<style>
+    .city_card {
+        /* border-radius: 16px; */
+        border: none;
+        background: #ffffff;
+    }
+
+    .city-table thead th {
+        font-size: 14.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        background: #f8f9fa;
+        padding: 15px;
+        border: none;
+    }
+
+    .city-table tbody tr {
+        position: relative;
+        transition: all 0.2s ease;
+    }
+
+    tr,
+    th,
+    td {
+        background-color: transparent !important;
+    }
+
+    /* .city-table tbody tr:hover {
+        background: rgba(13, 110, 253, 0.06) !important;
+        transform: translateY(-1px) scale(1.003);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+    } */
+
+    .city-table tbody tr:hover {
+        background: rgba(13, 110, 253, 0.06) !important;
+        /* transform: translateY(-1px) scale(1.003);  <-- Is line ko delete ya comment kar de */
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.02);
+        /* Scale ki jagah subtle shadow use karein */
+    }
+
+
+    .price-badge {
+        background: #e7f1ff;
+        color: rgb(255, 52, 52);
+        font-weight: 700;
+        padding: 6px 10px;
+        border-radius: 10px;
+        font-size: 13px;
+    }
+
+    .dropdown button {
+        background: #ffffff;
+        z-index: 2 !important;
+    }
+
+    .dropdown-menu {
+        z-index: 1050 !important;
+        margin-top: 0 !important;
+        /* Alignment sahi rakhne ke liye */
+        transform: none !important;
+    }
+</style>
+
+<div class="content-wrapper p-3">
+    <div class="d-flex justify-content-center">
+        <div class="card col-7 city_card shadow-sm">
+            <div class="card-header bg-white border-0 pt-4 pb-2">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <h4 class="mb-0 fw-bold text-dark"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Cities
+                        Management
+                    </h4>
+                    <div class="d-flex gap-2">
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                            <input type="text" id="BusSearch" class="form-control bg-light border-start-0"
+                                placeholder="Search city...">
+                        </div>
+                    </div>
+                    <a href="{% url 'add_city' %}" class="btn btn-danger btn-sm">
+                        + Add New City
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table class="table city-table align-middle mb-0 mt-2" id="BusTable">
+                        <thead class="bg-body-secondary">
+                            <tr>
+                                <th>#</th>
+                                <th>img</th>
+                                <th>City Name</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for city in cities %}
+                            <tr>
+                                <td class="text-muted">{{ forloop.counter }}</td>
+                                <td>
+                                    <img src="{{ city.image.url }}" alt="{{ city.name }}" class="rounded" width="50"
+                                        height="50">
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">{{ city.name }}</div>
+                                </td>
+
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li>
+                                                <a class="dropdown-item" href="{% url 'edit_city' city.id %}">
+                                                    ✏️ Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal" data-cityid="{{ city.id }}"
+                                                    data-cityname="{{ city.name }}"
+                                                    data-deleteurl="{% url 'delete_city' city.id %}">
+                                                    <i class="bi bi-trash mx-1  "></i> Delete
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="10" class="text-center py-5 text-muted">
+                                    🚫 No cities found
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle mr-2"></i> Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="mb-0">Are you sure you want to delete <strong id="cityNameDisplay"></strong>?</p>
+                <small class="text-muted">This action cannot be undone.</small>
+            </div>
+            <div class="modal-footer bg-light border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger px-4 shadow-sm">Delete Permanently</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('BusSearch').addEventListener('keyup', function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#BusTable tbody tr');
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+</script>
+<script>
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const cityName = button.getAttribute('data-cityname');
+        const deleteUrl = button.getAttribute('data-deleteurl');
+        document.getElementById('cityNameDisplay').textContent = cityName;
+        const form = document.getElementById('deleteForm');
+        form.action = deleteUrl;
+    });
+</script>
+{% endblock %}

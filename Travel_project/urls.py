@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('travel.urls')),
     path('bus/',include('bus_app.urls')),
+    path('train/',include('train_app.urls')),
     path('dashboard/',include('admin.urls')),
     path('user_dashboard/',include('user_dashboard.urls')),
 ]

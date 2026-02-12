@@ -131,22 +131,22 @@
                 <div class="card-body">
                     <div class="row align-items-center row-gap-3">
                         <div class="col-md-3">
-                            <div class="bus-name text-capitalize">{{ data.bus.bus_name }}</div>
+                            <div class="bus-name fs-5 text-capitalize">{{data.bus.bus_name}}</div>
                             <span class="bus-tag">{{ data.bus.bus_type }}</span>
                             <span class="bus-tag">{{ data.bus.bus_seating_type }}</span>
                         </div>
                         <div class="col-md-5 text-center">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <div class="fw-bold">{{ data.bus.departure_time|time:"h:iA" }}</div>
-                                    <small class="text-muted text-capitalize">{{ data.bus.source }}</small>
+                                    <div class="fw-bold fs-5">{{data.bus.departure_time|time:"h:iA" }}</div>
+                                    <small class="text-muted fs-6 text-capitalize">{{ data.bus.source }}</small>
                                 </div>
 
                                 <span class="rb-duration">{{ data.duration }}</span>
 
                                 <div>
-                                    <div class="fw-bold">{{ data.bus.arrival_time|time:"h:iA" }}</div>
-                                    <small class="text-muted text-capitalize">{{ data.bus.destination }}</small>
+                                    <div class="fw-bold fs-5">{{ data.bus.arrival_time|time:"h:iA" }}</div>
+                                    <small class="text-muted fs-6 text-capitalize">{{ data.bus.destination }}</small>
                                 </div>
                             </div>
                         </div>
@@ -200,10 +200,13 @@
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link text-danger" href="?page=1">&laquo; First</a>
+                    <a class="page-link text-danger"
+                        href="?page=1&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">&laquo;
+                        First</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link text-danger" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    <a class="page-link text-danger"
+                        href="?page={{ page_obj.previous_page_number }}&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Previous</a>
                 </li>
                 {% endif %}
 
@@ -215,10 +218,13 @@
 
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link text-danger" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    <a class="page-link text-danger"
+                        href="?page={{ page_obj.next_page_number }}&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Next</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link text-danger" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                    <a class="page-link text-danger"
+                        href="?page={{ page_obj.paginator.num_pages }}&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Last
+                        &raquo;</a>
                 </li>
                 {% endif %}
             </ul>

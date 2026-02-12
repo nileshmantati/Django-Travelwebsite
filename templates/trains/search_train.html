@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+    .sticky-sidebar {
+        position: sticky;
+        top: 0px;
+        height: fit-content;
+    }
+
+    .offcanvas {
+        max-width: 300px;
+    }
+
+    @media (max-width: 767px) {
+        .sticky-sidebar {
+            position: static;
+        }
+    }
+
+    /* ===== RedBus Card Style ===== */
+    .card {
+        border-radius: 14px;
+        border: 1px solid #eee;
+        transition: 0.25s ease-in-out;
+    }
+
+    .card:hover {
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+        transform: translateY(-5px);
+    }
+
+    /* Bus Name */
+    .bus-name {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #d32f2f;
+    }
+
+    /* Bus type badge */
+    .bus-tag {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: #f1f1f1;
+        display: inline-block;
+        margin-top: 4px;
+    }
+
+    /* Duration pill */
+    .rb-duration {
+        background: #f5f5f5;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #555;
+    }
+
+    /* Price */
+    .price strong {
+        color: #222;
+    }
+
+    /* Seat box */
+    .seat-box {
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    /* Seats left */
+    .left_seats {
+        font-size: 0.85rem;
+    }
+
+    /* Hurry warning */
+    .text-warning {
+        font-size: 0.8rem;
+    }
+
+    /* CTA button */
+    .btn-outline-danger {
+        --bs-btn-color: #d32f2f;
+        --bs-btn-border-color: #d32f2f;
+        --bs-btn-hover-bg: #d32f2f;
+        --bs-btn-hover-color: #fff;
+    }
+
+    .seat-low {
+        color: #d32f2f;
+        font-weight: 700;
+    }
+
+    .page-link {
+        border-color: #eee;
+    }
+
+    .page-item.disabled .page-link {
+        background-color: #f8f9fa;
+    }
+
+    /* IRCTC Theme Colors */
+
+
+    .coach-chip {
+        transition: all 0.2s ease;
+        border: 1.5px solid #dee2e6 !important;
+    }
+
+    .btn-primary {
+        background-color: var(--irctc-blue) !important;
+    }
+
+
+    @media (min-width: 992px) {
+        .border-start-lg {
+            border-left: 1px solid #eee !important;
+            padding-left: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-md container-fluid my-4">
+    <div class="row">
+        <!-- Filters -->
+        <!-- Mobile Filter Button -->
+        <div class="d-sm-none mb-3">
+            <button class="btn btn-outline-danger w-100" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas">
+                <i class="bi bi-funnel"></i> Filters
+            </button>
+        </div>
+        <aside class="col-lg-3 col-sm-4 d-none d-sm-block">
+            <div class="sticky-sidebar">
+                {% include 'components/sidebar.html' %}
+            </div>
+        </aside>
+
+        <!-- Train Results -->
+        <section class="col-lg-9 col-sm-8">
+            {% if page_obj %}
+            {% for data in page_obj %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col-lg-3 mb-3 mb-lg-0">
+                            <div class="bus-name text-uppercase" style="color: #213d77;">
+                                {{ data.train.train_name }}
+                            </div>
+                            <div class="text-muted small fw-bold mt-1">
+                                #{{ data.train.train_number }} | Runs on: <span class="text-success">
+                                    {{ data.train.runs_on }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fs-4 fw-bold">{{ data.train.departure_time|time:"H:i" }}</div>
+                                    <div class="text-capitalize text-muted text-center fw-semibold">
+                                        {{data.train.source.name }}</div>
+                                </div>
+                                <div class="rb-duration mb-1">{{ data.duration }}</div>
+                                <div>
+                                    <div class="fs-4 fw-bold">{{ data.train.arrival_time|time:"H:i"}}</div>
+                                    <div class="text-capitalize text-muted text-center fw-semibold">
+                                        {{data.train.destination.name}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 text-lg-end">
+                            <div class="price mb-2">
+                                <span class="text-muted small">Starting from</span>
+                                <div class="fs-3 fw-bold text-dark">₹{{data.train.coaches.last.price}}</div>
+                            </div>
+                            {% if request.user.is_authenticated %}
+                            <button class="btn btn-outline-danger" onclick="loadCoaches({{ data.train.id }})"
+                                data-bs-toggle="modal" data-bs-target="#coachModal">
+                                Book Now
+                            </button>
+                            {% else %}
+                            <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                                class="btn btn-outline-danger fw-semibold">
+                                Login to Book
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for coach in data.train.coaches.all %}
+                            <div class="coach-chip p-2 border rounded text-center {% if coach.available_seats > 0 %}bg-light{% else %}bg-secondary-subtle{% endif %}"
+                                style="min-width: 100px; cursor: pointer;">
+                                <div class="fw-bold small">{{ coach.get_coach_type_display }}</div>
+                                <div
+                                    class="fw-bold {% if coach.available_seats > 10 %}text-success{% else %}text-danger{% endif %}">
+                                    {% if coach.available_seats > 0 %}
+                                    AVL-{{ coach.available_seats }}
+                                    {% else %}
+                                    REGRET
+                                    {% endif %}
+                                </div>
+                                <div class="small text-muted">₹{{ coach.price }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link text-danger"
+                            href="?page=1&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">&laquo;
+                            First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link text-danger"
+                            href="?page={{ page_obj.previous_page_number }}&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link text-dark">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link text-danger"
+                            href="?page={{ page_obj.next_page_number }}&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link text-danger"
+                            href="?page={{ page_obj.paginator.num_pages }}&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Last
+                            &raquo;</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% else %}
+            <div class="d-flex justify-content-center">
+                <h3>No Buses Found</h3>
+            </div>
+            {% endif %}
+            <a href="{% url 'home' %}" class="btn btn-danger mt-2">Back to Home</a>
+        </section>
+    </div>
+</div>
+<!-- Mobile Offcanvas Filters -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="filterOffcanvas">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title">Filters</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <aside class="offcanvas-body">
+        {% include 'components/sidebar.html' %}
+    </aside>
+</div>
+
+<div class="modal fade" id="coachModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background-color: #213d77;">
+                <h5 class="modal-title">Select Class & Passenger Details</h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="coachModalBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">Fetching coach availability...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function loadCoaches(trainId) {
+        // Modal body ko reset karein (loading spinner dikhane ke liye)
+        document.getElementById("coachModalBody").innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Fetching coach availability...</p>
+        </div>`;
+
+        // AJAX call to get the coach form
+        let url = "{% url 'load_train_coaches' 0 %}".replace('0', trainId);
+
+        fetch(url)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("coachModalBody").innerHTML = html;
+            })
+            .catch(err => {
+                document.getElementById("coachModalBody").innerHTML =
+                    "<p class='text-danger text-center'>Error loading coach data. Please try again.</p>";
+            });
+    }
+</script>
+
+{% endblock %}

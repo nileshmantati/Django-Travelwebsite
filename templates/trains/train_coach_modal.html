@@ -1,0 +1,88 @@
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Radio Button styling for Coach selection */
+    .btn-check:checked+.btn-outline-primary {
+        background-color: #eef2ff;
+        border-color: #213d77 !important;
+        color: #213d77;
+        box-shadow: 0 0 0 2px #213d77;
+    }
+
+    .form-control-sm,
+    .form-select-sm {
+        border-radius: 6px;
+        padding: 8px;
+    }
+
+    /* Proceed Button IRCTC Style */
+    .btn-warning {
+        background-color: #fb792b !important;
+        /* IRCTC Orange */
+        border: none;
+        color: white !important;
+    }
+
+    .btn-warning:hover {
+        background-color: #e66a1f !important;
+    }
+</style>
+{% endblock %}
+
+<form id="bookingForm" method="POST" action="{% url 'book_train' %}">
+    {% csrf_token %}
+    <input type="hidden" name="train_id" value="{{ train.id }}">
+
+    <h6 class="fw-bold mb-3"><i class="bi bi-Layout-three-columns"></i> Choose Class</h6>
+    <div class="row g-2 mb-4">
+        {% for coach in coaches %}
+        <div class="col-6">
+            <input type="radio" class="btn-check" name="coach_id" id="coach_{{ coach.id }}" value="{{ coach.id }}" 
+            {% if coach.available_seats == 0 %}disabled{% endif %} required>
+            <label class="btn btn-outline-primary w-100 text-start p-2" for="coach_{{ coach.id }}">
+                <div class="small fw-bold">{{ coach.get_coach_type_display }}</div>
+                <div class="d-flex justify-content-between">
+                    <span class="small">₹{{ coach.price }}</span>
+                    <span class="small {% if coach.available_seats > 0 %}text-success{% else %}text-danger{% endif %}">
+                        {% if coach.available_seats > 0 %}AVL {{ coach.available_seats }}{% else %}Full{% endif %}
+                    </span>
+                </div>
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+
+    <h6 class="fw-bold mb-3"><i class="bi bi-person-plus"></i> Passenger Details</h6>
+    <div class="bg-light p-3 rounded border">
+        <div class="mb-3">
+            <label class="small fw-bold">Full Name</label>
+            <input type="text" name="passenger_name" class="form-control form-control-sm" placeholder="As per Aadhaar"
+                required>
+        </div>
+        <div class="row g-2">
+            <div class="col-6">
+                <label class="small fw-bold">Age</label>
+                <input type="number" name="passenger_age" class="form-control form-control-sm" min="1" max="100"
+                    required>
+            </div>
+            <div class="col-6">
+                <label class="small fw-bold">Gender</label>
+                <select name="passenger_gender" class="form-select form-select-sm" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-warning w-100 fw-bold py-2 shadow-sm text-dark">
+            PROCEED TO PAYMENT
+        </button>
+        <p class="text-center x-small text-muted mt-2" style="font-size: 10px;">
+            By clicking proceed, you agree to TravelGo's terms and conditions.
+        </p>
+    </div>
+</form>

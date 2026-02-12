@@ -62,7 +62,7 @@
                             placeholder="Search user...">
                     </div>
                     {% if request.user.is_superuser %}
-                    <a href="/dashboard/add_user/" class="btn btn-danger btn-sm">
+                    <a href="{% url 'add_user' %}" class="btn btn-danger btn-sm">
                         + Add New User
                     </a>
                     {% endif %}

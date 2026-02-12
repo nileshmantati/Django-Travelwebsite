@@ -1,0 +1,166 @@
+{% extends 'dashboard/admin_base.html' %}
+
+{% block content %}
+<style>
+    /* Django's CheckboxSelectMultiple renders as a <ul> */
+    #id_runs_on {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 10px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #id_runs_on li {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    #id_runs_on input {
+        margin-right: 5px;
+    }
+</style>
+<div class="content-wrapper p-4">
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-train-front text-danger me-2"></i>Add New Train</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% for field in form %}
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-muted">{{ field.label }}</label>
+                        {% if field.name == "is_active" %}
+                        <div class="mt-2">
+                            {{ field }} <span style="margin-left: 2rem;">Active Status</span>
+                        </div>
+                        {% else %}
+                        {{ field }}
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="text-danger small">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-layers text-danger me-2"></i>Coach Details</h5>
+            </div>
+            <div class="card-body">
+                {{ formset.management_form }}
+                <div class="table-responsive">
+                    <table class="table align-middle" id="coach-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Coach Type</th>
+                                <th>Total Seats</th>
+                                <th>Available Seats</th>
+                                <th>Price (₹)</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coach-form-container">
+                            {% for coach_form in formset %}
+                            <tr class="coach-form-row">
+                                <td>{{ coach_form.coach_type }}</td>
+                                <td>{{ coach_form.total_seats }}</td>
+                                <td>{{ coach_form.available_seats }}</td>
+                                <td>{{ coach_form.price }}</td>
+                                <td class="text-center">
+                                    {% if forloop.first %}
+                                    <button type="button" class="btn btn-outline-secondary btn-sm disabled"><i
+                                            class="bi bi-lock"></i></button>
+                                    {% else %}
+                                    <button type="button" class="btn btn-outline-danger btn-sm remove-row-btn"><i
+                                            class="bi bi-trash"></i></button>
+                                    {% endif %}
+                                    <div class="d-none">{{ coach_form.DELETE }}</div>
+                                </td>
+                                {% for hidden in coach_form.hidden_fields %}{{ hidden }}{% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <button type="button" id="add-more-btn" class="btn btn-outline-danger btn-sm mt-2">
+                        <i class="bi bi-plus-circle me-1"></i> Add Another Coach
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger px-4 shadow-sm">Save Train & Coaches</button>
+            <a href="{% url 'train_list' %}" class="btn btn-light px-4 border">Cancel</a>
+        </div>
+    </form>
+</div>
+<script>
+    document.getElementById('add-more-btn').addEventListener('click', function () {
+        const totalForms = document.querySelector('input[name$="-TOTAL_FORMS"]');
+        const currentFormCount = parseInt(totalForms.value);
+        const container = document.getElementById('coach-form-container');
+        const rows = container.getElementsByClassName('coach-form-row');
+
+        const firstRow = rows[0];
+        const newRow = firstRow.cloneNode(true);
+
+        const prefix = totalForms.name.split('-')[0];
+
+        const formRegex = new RegExp(`${prefix}-0-`, 'g');
+        newRow.innerHTML = newRow.innerHTML.replace(formRegex, `${prefix}-${currentFormCount}-`);
+
+        container.appendChild(newRow);
+
+        const inputs = newRow.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if (input.name.includes('-id')) {
+                input.value = '';
+            } else if (input.type !== 'hidden' && input.type !== 'checkbox') {
+                input.value = '';
+            } else if (input.type === 'checkbox') {
+                input.checked = false;
+            }
+        });
+
+        const cells = newRow.getElementsByTagName('td');
+        const actionCell = cells[cells.length - 1]; // Last TD
+
+        if (actionCell) {
+            actionCell.innerHTML = `
+                <button type="button" class="btn btn-outline-danger btn-sm remove-row-btn">
+                    <i class="bi bi-trash"></i>
+                </button>
+                <div class="d-none">
+                    <input type="checkbox" name="${prefix}-${currentFormCount}-DELETE" id="id_${prefix}-${currentFormCount}-DELETE">
+                </div>
+            `;
+        }
+
+        totalForms.value = currentFormCount + 1;
+    });
+
+    document.getElementById('coach-form-container').addEventListener('click', function (e) {
+        const deleteBtn = e.target.closest('.remove-row-btn');
+        if (deleteBtn) {
+            const row = deleteBtn.closest('.coach-form-row');
+            const allRows = document.querySelectorAll('.coach-form-row');
+            if (allRows.length > 1) {
+                row.remove();
+            } else {
+                alert("Kam se kam ek coach hona zaroori hai.");
+            }
+        }
+    });
+</script>
+{% endblock %}

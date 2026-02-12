@@ -1,0 +1,201 @@
+{% extends 'dashboard/admin_base.html' %}
+
+{% block content %}
+<style>
+    /* Design wahi hai, bas flickering hata di gayi hai */
+    .train-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    tr,
+    th,
+    td {
+        background-color: transparent !important;
+    }
+    .train-table tbody tr:hover {
+        background: rgba(13, 110, 253, 0.06) !important;
+        /* transform: translateY(-1px) scale(1.003); */
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+    }
+    .price-badge {
+        background: #e7f1ff;
+        color: rgb(255, 52, 52);
+        font-weight: 700;
+        padding: 6px 10px;
+        border-radius: 10px;
+        font-size: 13px;
+    }
+    .dropdown button {
+        background: #ffffff;
+        z-index: 2 !important;
+    }
+
+    /* Dropdown ko stable rakhne ke liye */
+    .dropdown-menu {
+        z-index: 1050 !important;
+        border: none !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+</style>
+
+<div class="content-wrapper p-3">
+    <div class="card train-card shadow-sm">
+        <div class="card-header bg-white border-0 pt-4 pb-2">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <h4 class="mb-0 fw-bold text-dark">
+                    <i class="bi bi-train-front text-danger me-2 mx-2"></i>Traines Management
+                </h4>
+
+                <div class="d-flex gap-2">
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="trainSearch" class="form-control bg-light border-start-0"
+                            placeholder="Search train...">
+                    </div>
+                    <a href="{% url 'add_train' %}" class="btn btn-danger btn-sm">
+                        + Add New train
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table train-table align-middle mb-0 mt-2" id="trainTable">
+                    <thead class="bg-body-secondary">
+                        <tr>
+                            <th>#</th>
+                            <th>train</th>
+                            <th>Route</th>
+                            <th>Date & Time</th>
+                            <th>Seats</th>
+                            <th>Type</th>
+                            <th>Rating</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for train in trains %}
+                        <tr>
+                            <td class="text-muted">{{ forloop.counter }}</td>
+                            <td>
+                                <div class="fw-semibold">{{ train.train_name }}</div>
+                                <small class="text-muted">{{ train.train_number }}</small>
+                            </td>
+                            <td>
+                                {{ train.source.name }} <i class="bi bi-arrow-right mx-1"></i> 
+                                {{ train.destination.name}}
+                            </td>
+                            <td>
+                                <div>{{ train.travel_date|date:"d M Y" }}</div>
+                                <small class="text-muted">{{ train.departure_time|time:"h:i A" }}</small>
+                            </td>
+                            <td>
+                                {% with first_coach=train.coaches.first %}
+                                <span class="badge bg-light text-dark">
+                                    🪑 {{ first_coach.available_seats|default:"0" }}/
+                                    {{first_coach.total_seats|default:"0" }}
+                                </span>
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% for coach in train.coaches.all %}
+                                <span class="badge bg-info-subtle text-info small">
+                                    {{ coach.get_coach_type_display}}</span>
+                                {% endfor %}
+                            </td>
+                            <td>⭐ 4.5</td>
+                            <td>
+                                <span class="price-badge">
+                                    ₹ {% with first_coach=train.coaches.first %}{{ first_coach.price|default:"0" }}
+                                    {% endwith %}
+                                </span>
+                            </td>
+                            <td>
+                                <span
+                                    class="badge {% if train.is_active %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}">
+                                    {{ train.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn btn-light btn-sm rounded-circle shadow-none"
+                                        data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                        <li><a class="dropdown-item" href="#">✏️ Edit</a></li>
+                                        <li>
+                                            <a class="dropdown-item" href="#">
+                                                {% if train.is_active %}
+                                                <i class="bi bi-toggle-off text-danger mr-2"></i> Deactivate
+                                                {% else %}
+                                                <i class="bi bi-toggle-on text-success mr-2"></i> Activate
+                                                {% endif %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="dropdown-item text-danger"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                data-trainid="{{ train.id }}" data-trainname="{{ train.train_name }}"
+                                                data-url="#"> <i class="bi bi-trash3 me-2"></i> Delete
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle mr-2"></i> Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="mb-0">Are you sure you want to delete <strong id="trainNameDisplay"></strong>?</p>
+                <small class="text-muted">This action cannot be undone.</small>
+            </div>
+            <div class="modal-footer bg-light border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger px-4 shadow-sm">Delete Permanently</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('trainSearch').addEventListener('keyup', function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#trainTable tbody tr');
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+</script>
+<script>
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const trainId = button.getAttribute('data-trainid');
+        const trainName = button.getAttribute('data-trainname');
+        document.getElementById('trainNameDisplay').textContent = trainName;
+        const form = document.getElementById('deleteForm');
+        form.action = `/dashboard/delete_train/${trainId}/`;
+    });
+</script>
+{% endblock %}

@@ -1,117 +1,118 @@
-{% block extra_css %}
+{% load static %}
+
 <style>
-    /* ===== Bus Seat Styling ===== */
-    .bus-container {
-        margin: auto;
-        background: #f8f9fa;
-        border-radius: 15px;
-        animation: fadeIn 0.4s ease;
+    /* ===== Main Container & Scroll Logic ===== */
+    .bus-wrapper {
+        background: #fdfdfd;
+        padding: 20px 10px;
+        border-radius: 12px;
     }
 
-    .driver {
-        text-align: right;
-        font-size: 14px;
-        color: #666;
+    .bus-scroll-container {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 15px 5px;
+        cursor: grab;
+        /* Mobile smooth scroll */
+        -webkit-overflow-scrolling: touch;
     }
 
-    .seat {
-        width: 55px;
-        height: 55px;
+    /* Scrollbar Styling */
+    .bus-scroll-container::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .bus-scroll-container::-webkit-scrollbar-thumb {
+        background: #ced4da;
         border-radius: 10px;
+    }
+
+    .bus-layout-inner {
+        display: inline-flex;
+        flex-direction: column;
+        min-width: min-content;
+        position: relative;
+        padding-left: 50px;
+        /* Space for Driver Icon */
+    }
+
+    /* ===== Driver Icon ===== */
+    .driver-section {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 40px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        border-right: 2px dashed #dee2e6;
+        color: #6c757d;
+    }
+
+    .driver-icon {
+        font-size: 24px;
+        transform: rotate(0deg);
+    }
+
+    /* ===== Seat Styling ===== */
+    .seat {
+        width: 42px;
+        height: 42px;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 11px;
+        font-weight: 600;
+        transition: all 0.2s;
+        flex-shrink: 0;
+        margin: 2px;
+        position: relative;
+        border: 2px solid #198754;
+        color: #198754;
+        cursor: pointer;
     }
 
     .seat input {
         display: none;
     }
 
-    .seat.available {
-        border: 2px solid #198754;
-        color: #198754;
-        cursor: pointer;
-    }
-
+    /* Hover effect for available seats */
     .seat.available:hover {
-        background: #198754;
-        color: #fff;
+        background: #e8f5e9;
+        transform: scale(1.05);
     }
 
+    /* Booked Seat */
     .seat.booked {
-        background: gray;
-        color: #fff;
+        background: #e9ecef;
+        border-color: #adb5bd;
+        color: #6c757d;
         cursor: not-allowed;
+        opacity: 0.7;
     }
 
+    /* Selected Seat (Radio Checked) */
     .seat input:checked+span {
         background: #198754;
         color: #fff;
-        border-radius: 5px;
         width: 100%;
         height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
+        border-radius: 4px;
+        animation: pulse 0.3s ease;
     }
 
-    .aisle {
-        width: 30px;
-    }
-
-
-    /* ===== Seat Base ===== */
-    .seat {
-        width: 55px;
-        height: 55px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.25s ease;
-        position: relative;
-    }
-
-    /* ===== Available Seat ===== */
-    .seat.available {
-        border: 2px solid #198754;
-        color: #198754;
-        cursor: pointer;
-    }
-
-    .seat.available:hover {
-        background: #198754;
-        color: #fff;
-        transform: scale(1.08);
-        box-shadow: 0 6px 15px rgba(25, 135, 84, 0.35);
-    }
-
-    /* ===== Selected Seat ===== */
-    .seat input:checked+span {
-        background: #198754;
-        color: #fff;
-        border-radius: 8px;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        animation: seatSelect 0.35s ease;
-        box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.25);
-    }
-
-    /* Selection animation */
-    @keyframes seatSelect {
+    @keyframes pulse {
         0% {
-            transform: scale(0.85);
-            box-shadow: none;
+            transform: scale(0.9);
         }
 
-        60% {
-            transform: scale(1.15);
+        50% {
+            transform: scale(1.1);
         }
 
         100% {
@@ -119,48 +120,44 @@
         }
     }
 
-    /* ===== Booked Seat ===== */
-    .seat.booked {
-        background: #9e9e9e;
-        color: #fff;
-        cursor: not-allowed;
-        opacity: 0.7;
+    /* Deskstop Par Seat Size Badi */
+    @media (min-width: 768px) {
+        .seat {
+            width: 50px;
+            height: 50px;
+            font-size: 13px;
+        }
     }
 
-    .seat.booked::after {
-        content: "✖";
-        position: absolute;
-        font-size: 18px;
-        opacity: 0.8;
+    /* Section Labels */
+    .deck-label {
+        font-weight: bold;
+        color: #d32f2f;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        font-size: 14px;
     }
 
-    /* Fade in container */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .aisle-gap {
+        height: 30px;
+        /* Middle rasta */
     }
 </style>
-{% endblock %}
-{% block content %}
-<form method="POST" action="{% url 'bus_seats' bus.id %}">
-    {% csrf_token %}
-    {% if bus.bus_seating_type == 'SEATER' %}
-    <div class="bus-container p-3">
-        <div class="d-flex mb-4">
-            <div class="me-3 text-muted" style="writing-mode: vertical-rl;">
-                Driver 🚍
-            </div>
-            <div>
-                <div class="d-flex gap-3">
+
+<div class="bus-wrapper">
+    <form method="POST" action="{% url 'bus_seats' bus.id %}">
+        {% csrf_token %}
+
+        {% if bus.bus_seating_type == 'SEATER' %}
+        <div class="bus-scroll-container">
+            <div class="bus-layout-inner">
+                <div class="driver-section">
+                    <div class="mt-4" style="transform: rotate(-90deg);">Driver 🚍</div>
+                </div>
+
+                <div class="d-flex">
                     {% for column in seats_layout %}
-                    <div class="d-flex flex-column gap-3">
+                    <div class="d-flex flex-column">
                         {% for seat in column|slice:":3" %}
                         {% if seat in booked_seats %}
                         <div class="seat booked">{{ seat }}</div>
@@ -174,9 +171,12 @@
                     </div>
                     {% endfor %}
                 </div>
-                <div class="d-flex gap-3 mt-5">
+
+                <div class="aisle-gap"></div>
+
+                <div class="d-flex">
                     {% for column in seats_layout %}
-                    <div class="d-flex flex-column gap-3">
+                    <div class="d-flex flex-column">
                         {% for seat in column|slice:"3:" %}
                         {% if seat in booked_seats %}
                         <div class="seat booked">{{ seat }}</div>
@@ -192,28 +192,19 @@
                 </div>
             </div>
         </div>
-        <!-- <div class=""> -->
-        <button type="submit" class="btn btn-danger mt-3">Continue</button>
-        <!-- </div> -->
-    </div>
-    {% else %}
-    <h2>sleeper</h2>
-    <div class="bus-container p-3">
-        <div class="d-flex mb-4">
-            <div class="me-3 text-muted" style="writing-mode: vertical-rl;">
-                <!-- Driver 🚍 -->
-                <h4 style="transform: rotate(180deg);">Upper</h4>
-            </div>
-            <div>
-                <div class="d-flex gap-3">
+        {% else %}
+        <div class="deck-label"><i class="bi bi-layers-half"></i> Upper Deck</div>
+        <div class="bus-scroll-container">
+            <div class="bus-layout-inner">
+                <div class="d-flex">
                     {% for column in seats_layout_upper %}
-                    <div class="d-flex flex-column gap-3">
+                    <div class="d-flex flex-column">
                         {% for seat in column|slice:":2" %}
                         {% if seat in booked_seats %}
                         <div class="seat booked">{{ seat }}</div>
                         {% else %}
                         <label class="seat available">
-                            <input type="radio" name="seat" value="{{ seat }}" required>
+                            <input type="radio" name="seat" value="{{ seat }}">
                             <span>{{ seat }}</span>
                         </label>
                         {% endif %}
@@ -221,9 +212,10 @@
                     </div>
                     {% endfor %}
                 </div>
-                <div class="d-flex gap-3 mt-5">
+                <div class="aisle-gap"></div>
+                <div class="d-flex">
                     {% for column in seats_layout_upper %}
-                    <div class="d-flex flex-column gap-3">
+                    <div class="d-flex flex-column">
                         {% for seat in column|slice:"2:" %}
                         {% if seat in booked_seats %}
                         <div class="seat booked">{{ seat }}</div>
@@ -239,21 +231,15 @@
                 </div>
             </div>
         </div>
-        <!-- <div class=""> -->
-        <button type="submit" class="btn btn-danger mt-3">Continue</button>
-        <!-- </div> -->
-    </div>
-    <div class="bus-container p-3">
-        <div class="d-flex mb-4">
-            <div class="me-3 text-muted d-flex justify-content-between align-items-center"
-                style="writing-mode: vertical-rl;">
-                Driver 🚍
-                <h4 style="transform: rotate(180deg);">Lower</h4>
-            </div>
-            <div>
-                <div class="d-flex gap-3">
+        <div class="deck-label"><i class="bi bi-layers"></i> Lower Deck</div>
+        <div class="bus-scroll-container mb-4">
+            <div class="bus-layout-inner">
+                <div class="driver-section">
+                    <div class="mt-4" style="transform: rotate(-90deg);">Driver 🚍</div>
+                </div>
+                <div class="d-flex">
                     {% for column in seats_layout_lower %}
-                    <div class="d-flex flex-column gap-3">
+                    <div class="d-flex flex-column">
                         {% for seat in column|slice:":2" %}
                         {% if seat in booked_seats %}
                         <div class="seat booked">{{ seat }}</div>
@@ -267,9 +253,10 @@
                     </div>
                     {% endfor %}
                 </div>
-                <div class="d-flex gap-3 mt-5">
+                <div class="aisle-gap"></div>
+                <div class="d-flex">
                     {% for column in seats_layout_lower %}
-                    <div class="d-flex flex-column gap-3">
+                    <div class="d-flex flex-column">
                         {% for seat in column|slice:"2:" %}
                         {% if seat in booked_seats %}
                         <div class="seat booked">{{ seat }}</div>
@@ -285,10 +272,14 @@
                 </div>
             </div>
         </div>
-        <!-- <div class=""> -->
-        <button type="submit" class="btn btn-danger mt-3">Continue</button>
-        <!-- </div> -->
-    </div>
-    {% endif %}
-</form>
-{% endblock %}
+        {% endif %}
+
+        <div class="mt-4 border-top pt-3 d-flex justify-content-between align-items-center">
+            <div class="text-muted small">
+                <span class="badge bg-success">●</span> Selected
+                <span class="badge bg-secondary ms-2">●</span> Booked
+            </div>
+            <button type="submit" class="btn btn-danger px-4">Confirm Selection</button>
+        </div>
+    </form>
+</div>

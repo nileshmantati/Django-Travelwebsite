@@ -8,9 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import PassengerForm
 from django.core.paginator import Paginator
 
-
 def bus_search(request):
-    buses = BusModel.objects.none()
     bus_list = []
     
     from_city = request.GET.get('from', '').strip()
@@ -26,7 +24,11 @@ def bus_search(request):
         travel_date = now().date() + timedelta(days=1)
     else:
         date_str = request.GET.get('date')
-        travel_date = datetime.strptime(date_str, "%Y-%m-%d").date() if date_str else None
+        # travel_date = datetime.strptime(date_str, "%Y-%m-%d").date() if date_str else None
+        try:
+            travel_date = datetime.strptime(date_str, "%Y-%m-%d").date() if date_str else now().date()
+        except (ValueError, TypeError):
+            travel_date = now().date()
 
     if from_city and to_city:
         if from_city.lower() == to_city.lower():
@@ -39,6 +41,7 @@ def bus_search(request):
             'from': from_city,
             'to': to_city,
             'date': str(travel_date or now().date()),
+            'search_type' : "bus",
             'searched_at': now().isoformat()
         }
         history = [h for h in history if h != new_search]
@@ -71,20 +74,17 @@ def bus_search(request):
             buses = buses.filter(bus_seating_type=seat_type)
             
         for bus in buses:
-            dep = bus.departure_time
-            arr = bus.arrival_time
-            if arr < dep: 
-                arr += timedelta(days=1)
-
-            duration = arr - dep
-            hours, remainder = divmod(duration.seconds, 3600)
-            minutes = remainder // 60
+            duration = bus.arrival_time - bus.departure_time
+            
+            total_seconds = int(duration.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
 
             bus_list.append({
                 'bus': bus,
+                'train': None,
                 'duration': f"{hours}h {minutes}m"
             })
-        buses = BusModel.objects.all()
         paginator = Paginator(bus_list, 5) # Show 5 buses per page
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -94,28 +94,10 @@ def bus_search(request):
             'travel_date': travel_date or now().date(),
             'page_obj': page_obj,
         }
-        return render(request, 'all_bus.html', context)
+        return render(request, 'search_bus.html', context)
     
     messages.error(request, "Please enter both From and To cities")
     return redirect('home')
-
-@login_required(login_url='login')
-def my_bus_booking(request):
-    bookings = BusBooking.objects.filter(user=request.user)
-    return render(request,'my_bus_booking.html',{'bookings': bookings})
-
-@login_required(login_url='login')
-def cancel_booking(request, pk):
-    booking = get_object_or_404(BusBooking, pk=pk, user=request.user)
-    
-    if booking.booking_status == 'CANCELLED':
-        messages.info(request, "Booking already cancelled.")
-    else:
-        booking.cancel()
-        booking.delete()
-        messages.success(request, "Booking cancelled and seat restored.")
-
-    return redirect('my_bus_booking')
 
 # For Seater Bus
 def generate_seats_for_seater(total_seats=50):
