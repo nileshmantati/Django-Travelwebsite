@@ -79,7 +79,7 @@ def coming_soon(request, service_name):
 
 
 @login_required(login_url='login')
-def my_bus_booking(request):
+def my_bookings(request):
     bus_bookings = BusBooking.objects.filter(user=request.user).order_by('-booked_at')
     train_bookings = TrainBooking.objects.filter(user=request.user).order_by('-booked_at')
     return render(request, 'my_bookings.html', {

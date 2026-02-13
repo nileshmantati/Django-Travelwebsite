@@ -90,9 +90,6 @@ def train_search(request):
             'travel_date': travel_date or now().date(),
             'page_obj': page_obj,
         }
-        print(train_list)
-        messages.info(request, "Train search functionality is coming soon!")
-        print("Train search called")
         return render(request, 'trains/search_train.html',context)
     
     messages.error(request, "Please enter both From and To cities")

@@ -220,12 +220,12 @@
                     {% if page_obj.has_previous %}
                     <li class="page-item">
                         <a class="page-link text-danger"
-                            href="?page=1&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">&laquo;
+                            href="?page=1&type=train&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">&laquo;
                             First</a>
                     </li>
                     <li class="page-item">
                         <a class="page-link text-danger"
-                            href="?page={{ page_obj.previous_page_number }}&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Previous</a>
+                            href="?page={{ page_obj.previous_page_number }}&type=train&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Previous</a>
                     </li>
                     {% endif %}
 
@@ -238,11 +238,11 @@
                     {% if page_obj.has_next %}
                     <li class="page-item">
                         <a class="page-link text-danger"
-                            href="?page={{ page_obj.next_page_number }}&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Next</a>
+                            href="?page={{ page_obj.next_page_number }}&type=train&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Next</a>
                     </li>
                     <li class="page-item">
                         <a class="page-link text-danger"
-                            href="?page={{ page_obj.paginator.num_pages }}&type=bus&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Last
+                            href="?page={{ page_obj.paginator.num_pages }}&type=train&from={{ from_city }}&to={{ to_city }}&date={{ travel_date|date:'Y-m-d' }}">Last
                             &raquo;</a>
                     </li>
                     {% endif %}

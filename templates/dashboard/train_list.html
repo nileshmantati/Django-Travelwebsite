@@ -80,9 +80,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for train in trains %}
+                        {% if page_obj %}
+                        {% for train in page_obj %}
                         <tr>
-                            <td class="text-muted">{{ forloop.counter }}</td>
+                            <td class="text-muted">{{ train.id }}</td>
                             <td>
                                 <div class="fw-semibold">{{ train.train_name }}</div>
                                 <small class="text-muted">{{ train.train_number }}</small>
@@ -151,17 +152,47 @@
                                 </div>
                             </td>
                         </tr>
-                        {% empty %}
+                        {% endfor %}
+                        {% else %}
                         <tr>
                             <td colspan="10" class="text-center py-5 text-muted">
                                 🚫 No Trains found
                             </td>
                         </tr>
-                        {% endfor %}
+                        {% endif %}
                     </tbody>
                 </table>
-            </div>
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link text-danger" href="?page=1">&laquo;
+                                First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link text-danger"
+                                href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                        {% endif %}
 
+                        <li class="page-item disabled">
+                            <span class="page-link text-dark">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link text-danger" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link text-danger" href="?page={{ page_obj.paginator.num_pages }}">Last
+                                &raquo;</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
 </div>

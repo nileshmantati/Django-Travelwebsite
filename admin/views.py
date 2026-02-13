@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
 
 # Create your views here.
 def staff_required(user):
@@ -109,8 +110,11 @@ def bus_list(request):
     if not request.user.is_staff:
         raise PermissionDenied
     
-    buses = BusModel.objects.all()
-    return render(request,'dashboard/bus_list.html',{'buses':buses})
+    buses = BusModel.objects.all().order_by('-created_at')
+    paginator = Paginator(buses, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request,'dashboard/bus_list.html',{'page_obj':page_obj})
 
 @login_required
 def add_bus(request):
@@ -177,11 +181,11 @@ def delete_bus(request,pk):
 def train_list(request):
     if not request.user.is_staff:
         raise PermissionDenied
-    trains = TrainModel.objects.prefetch_related('coaches').all()
-    context={
-        'trains':trains
-    }
-    return render(request,'dashboard/train_list.html',context)
+    trains = TrainModel.objects.prefetch_related('coaches').all().order_by('-created_at')
+    paginator = Paginator(trains, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request,'dashboard/train_list.html',{'page_obj':page_obj})
 
 @login_required
 def add_train(request):

@@ -55,8 +55,8 @@
                 </li>
                 {% if request.user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link justify-content-md-center {% if request.path == '/bus/my-bus-booking/' %}active{% endif %}"
-                        href="/my-bus-booking/">My Bookings</a>
+                    <a class="nav-link justify-content-md-center {% if request.path == '/my-bookings/' %}active{% endif %}"
+                        href="/my-bookings/">My Bookings</a>
                 </li>
                 {% endif %}
             </ul>
