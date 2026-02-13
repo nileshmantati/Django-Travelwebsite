@@ -11,6 +11,9 @@ def insert_weekly_data():
         ("Delhi","Mumbai"),
         ("Mumbai", "Pune"),
         ("Pune", "Delhi"),
+        ("Mumbai","Delhi"),
+        ("Pune","Mumbai"),
+        ("Delhi","Pune"),
     ]
     buses = [
         {

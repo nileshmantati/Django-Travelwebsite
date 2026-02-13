@@ -171,65 +171,6 @@ def delete_bus(request,pk):
         bus.delete()
         messages.success(request, f"Bus '{bus_name}' has been deleted successfully!")
     return redirect('bus_list')
-
-# Users Views
-@login_required
-def users(request):
-    if not request.user.is_staff:
-        raise PermissionDenied
-    users = User.objects.all()
-    context={
-        'users':users
-    }
-    return render(request,'dashboard/users.html',context)
-
-@login_required
-def add_user(request):
-    if not request.user.is_superuser:
-        raise PermissionDenied
-    
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "User added successfully!")
-            return redirect('users')
-    else:
-        form = UserForm()
-    return render(request,'dashboard/add_user.html',{
-        'form': form, 
-        'title': 'Add New User'
-    })
-    
-@login_required
-def edit_user(request,pk):
-    if not request.user.is_superuser:
-        raise PermissionDenied
-    
-    user = get_object_or_404(User, pk=pk)
-    if request.method == 'POST':
-        form = UserForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "User updated successfully!")
-            return redirect('users')
-        else:
-            messages.error(request, "Please correct the errors below.")
-            print("Form Errors:", form.errors)
-    form = UserForm(instance=user)
-    return render(request, 'dashboard/edit_user.html', {'form': form, 'title': 'Edit User'})
-
-@login_required
-def delete_user(request,pk):
-    if not request.user.is_superuser:
-        raise PermissionDenied
-    
-    if request.method == 'POST':
-        user = get_object_or_404(User, pk=pk)
-        username = user.username
-        user.delete()
-        messages.success(request, f"User '{username}' has been deleted successfully!")
-    return redirect('users')
     
 # Train Views
 @login_required
@@ -362,6 +303,66 @@ def train_bookings(request):
         'bookings':bookings
     }
     return render(request,'dashboard/train_bookings.html',context)  
+
+# Users Views
+@login_required
+def users(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    users = User.objects.all()
+    context={
+        'users':users
+    }
+    return render(request,'dashboard/users.html',context)
+
+@login_required
+def add_user(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "User added successfully!")
+            return redirect('users')
+    else:
+        form = UserForm()
+    return render(request,'dashboard/add_user.html',{
+        'form': form, 
+        'title': 'Add New User'
+    })
+    
+@login_required
+def edit_user(request,pk):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "User updated successfully!")
+            return redirect('users')
+        else:
+            messages.error(request, "Please correct the errors below.")
+            print("Form Errors:", form.errors)
+    form = UserForm(instance=user)
+    return render(request, 'dashboard/edit_user.html', {'form': form, 'title': 'Edit User'})
+
+@login_required
+def delete_user(request,pk):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
+    if request.method == 'POST':
+        user = get_object_or_404(User, pk=pk)
+        username = user.username
+        user.delete()
+        messages.success(request, f"User '{username}' has been deleted successfully!")
+    return redirect('users')
+
 # def product_create(request):
 #     if request.method == 'POST':
 #         form = ProductForm(request.POST, request.FILES) # Files image ke liye zaroori hai

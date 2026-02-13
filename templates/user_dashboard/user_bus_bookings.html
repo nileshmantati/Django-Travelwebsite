@@ -80,7 +80,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% if bookings %}
                         {% for booking in bookings %}
                         <tr>
                             <td class="text-muted ps-3">{{ forloop.counter }}</td>
@@ -96,7 +95,7 @@
                             <td>
                                 <div class="fw-bold text-primary">{{ booking.bus.bus_name }}</div>
                                 <div class="small text-muted text-truncate" style="max-width: 180px;">
-                                    {{ booking.bus.source.name }} <i class="bi bi-arrow-right mx-1"></i>
+                                    {{ booking.bus.source.name }} <i class="bi bi-arrow-right mx-1"></i> 
                                     {{booking.bus.destination.name }}
                                 </div>
                             </td>
@@ -136,8 +135,7 @@
                                 {{ booking.booked_at|date:"H:i" }}
                             </td>
                         </tr>
-                        {% endfor %}
-                        {% else %}
+                        {% empty %}
                         <tr>
                             <td colspan="8" class="text-center py-5">
                                 <div class="py-4">
@@ -146,7 +144,7 @@
                                 </div>
                             </td>
                         </tr>
-                        {% endif %}
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

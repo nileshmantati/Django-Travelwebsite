@@ -6,17 +6,20 @@
     .train-table tbody tr {
         transition: all 0.2s ease;
     }
+
     tr,
     th,
     td {
         background-color: transparent !important;
     }
+
     .train-table tbody tr:hover {
         background: rgba(13, 110, 253, 0.06) !important;
         /* transform: translateY(-1px) scale(1.003); */
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
         border-radius: 12px;
     }
+
     .price-badge {
         background: #e7f1ff;
         color: rgb(255, 52, 52);
@@ -25,6 +28,7 @@
         border-radius: 10px;
         font-size: 13px;
     }
+
     .dropdown button {
         background: #ffffff;
         z-index: 2 !important;
@@ -84,7 +88,7 @@
                                 <small class="text-muted">{{ train.train_number }}</small>
                             </td>
                             <td>
-                                {{ train.source.name }} <i class="bi bi-arrow-right mx-1"></i> 
+                                {{ train.source.name }} <i class="bi bi-arrow-right mx-1"></i>
                                 {{ train.destination.name}}
                             </td>
                             <td>
@@ -125,7 +129,8 @@
                                         <i class="bi bi-three-dots-vertical"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                        <li><a class="dropdown-item" href="{% url 'edit_train' train.id %}">✏️ Edit</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'edit_train' train.id %}">✏️ Edit</a>
+                                        </li>
                                         <li>
                                             <a class="dropdown-item" href="{% url 'change_train_status' train.id %}">
                                                 {% if train.is_active %}
@@ -144,6 +149,12 @@
                                         </li>
                                     </ul>
                                 </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10" class="text-center py-5 text-muted">
+                                🚫 No Trains found
                             </td>
                         </tr>
                         {% endfor %}

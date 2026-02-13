@@ -115,6 +115,19 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchType = urlParams.get('type');
+
+        if (searchType) {
+            let tabToClick = document.querySelector(`a[onclick*="'${searchType}'"]`);
+
+            if (tabToClick) {
+                switchSearch(searchType, tabToClick);
+            }
+        }
+    });
+
     // SwitchSearch
     function switchSearch(search_type, element) {
         document.getElementById('inputType').value = search_type;
@@ -125,6 +138,10 @@
             document.getElementById('fromCity').placeholder = 'From City';
             document.getElementById('toCity').placeholder = 'To City';
         } else if (search_type === 'train') {
+            document.getElementById('fromCity').placeholder = 'From Station';
+            document.getElementById('toCity').placeholder = 'To Station';
+        }
+        else if (search_type === 'hotel') {
             document.getElementById('fromCity').placeholder = 'From Station';
             document.getElementById('toCity').placeholder = 'To Station';
         }
@@ -173,11 +190,10 @@
     }
 
     // City autocomplete
-    const cities = [
-        "Mumbai", "Pune", "Delhi", "Bangalore", "Chennai",
-        "Hyderabad", "Ahmedabad", "Jaipur", "Surat", "Indore",
-        "Bhopal", "Nagpur", "Kolhapur", "Satara", "Nashik"
-    ];
+    const cities = ["Mumbai", "Pune", "Delhi"];
+    // "Mumbai", "Pune", "Delhi", "Bangalore", "Chennai",
+    // "Hyderabad", "Ahmedabad", "Jaipur", "Surat", "Indore",
+    // "Bhopal", "Nagpur", "Kolhapur", "Satara", "Nashik"
 
 
     function filterCities(input, listId) {

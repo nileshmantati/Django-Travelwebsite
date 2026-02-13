@@ -2,13 +2,13 @@
 {% block content %}
 
 <style>
-    .bus-card {
+    .train-card {
         /* border-radius: 16px; */
         border: none;
         background: #ffffff;
     }
 
-    .bus-table thead th {
+    .train-table thead th {
         font-size: 14.5px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -18,7 +18,7 @@
         border: none;
     }
 
-    .bus-table tbody tr {
+    .train-table tbody tr {
         transition: all 0.2s ease;
     }
 
@@ -37,16 +37,31 @@
         font-size: 0.9rem;
     }
 
-    .bus-table tbody tr:hover {
+    .train-table tbody tr:hover {
         background: rgba(13, 110, 253, 0.06) !important;
         transform: translateY(-1px) scale(1.003);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
         border-radius: 12px;
     }
+
+    .pnr {
+        font-family: 'Courier New', Courier, monospace;
+        color: red !important;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
 </style>
 
 <div class="content-wrapper p-3">
-    <div class="card bus-card shadow-sm">
+    <div class="card train-card shadow-sm">
         <div class="card-header bg-white border-0 pt-4 pb-2">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <h4 class="mb-0 fw-bold text-dark">
@@ -66,12 +81,13 @@
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table bus-table align-middle mb-0 mt-2" id="bookingTable">
+                <table class="table train-table align-middle mb-0 mt-2" id="bookingTable">
                     <thead class="bg-body-secondary">
                         <tr>
                             <th class="ps-3">#</th>
+                            <th>pnr_number</th>
                             <th>Passenger & User</th>
-                            <th>Bus / Route</th>
+                            <th>Train / Route</th>
                             <th>Schedule</th>
                             <th>Seat</th>
                             <th>Fare</th>
@@ -80,11 +96,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% if bookings %}
                         {% for booking in bookings %}
                         <tr>
                             <td class="text-muted ps-3">{{ forloop.counter }}</td>
-
+                            <td class="pnr">{{booking.pnr_number}}</td>
                             <td>
                                 <div class="fw-bold text-dark">{{ booking.passenger_name }}</div>
                                 <div class="small text-muted">
@@ -94,27 +109,27 @@
                             </td>
 
                             <td>
-                                <div class="fw-bold text-primary">{{ booking.bus.bus_name }}</div>
+                                <div class="fw-bold text-primary">{{ booking.train.train_name }}</div>
                                 <div class="small text-muted text-truncate" style="max-width: 180px;">
-                                    {{ booking.bus.source.name }} <i class="bi bi-arrow-right mx-1"></i>
-                                    {{booking.bus.destination.name }}
+                                    {{ booking.train.source.name }} <i class="bi bi-arrow-right mx-1"></i>
+                                    {{booking.train.destination.name }}
                                 </div>
                             </td>
 
                             <td>
-                                <div class="small fw-bold text-dark">{{ booking.bus.travel_date|date:"d M, Y" }}</div>
+                                <div class="small fw-bold text-dark">{{ booking.train.travel_date|date:"d M, Y" }}</div>
                                 <div class="badge bg-light text-dark fw-normal border" style="font-size: 10px;">
-                                    <i class="bi bi-clock me-1"></i>{{ booking.bus.departure_time|date:"h:i A" }}
+                                    <i class="bi bi-clock me-1"></i>{{ booking.train.departure_time|date:"h:i A" }}
                                 </div>
                             </td>
 
                             <td>
-                                <div class="text-center bg-black rounded py-1 border" style="width: 40px;">
+                                <div class="text-center bg-black rounded p-1 border">
                                     <small class="fw-bold">{{ booking.seat_number }}</small>
                                 </div>
                             </td>
 
-                            <td><span class="price-badge">₹{{ booking.price }}</span></td>
+                            <td><span class="price-badge">₹{{ booking.coach.price }}</span></td>
 
                             <td>
                                 {% if booking.booking_status == 'CONFIRMED' %}
@@ -136,8 +151,7 @@
                                 {{ booking.booked_at|date:"H:i" }}
                             </td>
                         </tr>
-                        {% endfor %}
-                        {% else %}
+                        {% empty %}
                         <tr>
                             <td colspan="8" class="text-center py-5">
                                 <div class="py-4">
@@ -146,7 +160,7 @@
                                 </div>
                             </td>
                         </tr>
-                        {% endif %}
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

@@ -7,12 +7,13 @@ def insert_weekly_data():
     TrainModel.objects.filter(travel_date__lt=today, is_active=True).update(is_active=False)
 
     routes = [
-        ("Delhi", "Mumbai"),
+        ("Delhi","Mumbai"),
         ("Mumbai", "Pune"),
         ("Pune", "Delhi"),
+        ("Mumbai","Delhi"),
+        ("Pune","Mumbai"),
+        ("Delhi","Pune"),
     ]
-
-
     train_data = [
         {
             "train_name": "Rajdhani Express",
@@ -52,7 +53,8 @@ def insert_weekly_data():
             for data in train_data:
                 # Dynamic train number for uniqueness across dates (Optional)
                 # Agar aap unique_together constraint use kar rahe ho to ye zaroori hai
-                unique_number = f"{data['train_number']}-{travel_date.strftime('%d%m')}"
+                # unique_number = f"{data['train_number']}-{travel_date.strftime('%d%m')}"
+                unique_number = f"{data['train_number']}-{source.id}-{destination.id}-{travel_date.strftime('%d%m')}"
 
                 dep_time = timezone.make_aware(
                     datetime.combine(travel_date, datetime.strptime(data["departure_time"], "%H:%M").time())

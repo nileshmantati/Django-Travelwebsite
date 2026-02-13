@@ -1,5 +1,6 @@
 from django.shortcuts import render,get_object_or_404,redirect
 from bus_app.models import BusModel, BusBooking, City
+from train_app.models import TrainModel, TrainBooking
 from django.contrib.auth.models import User
 from user_dashboard.forms import UserProfileForm, ProfileForm
 from django.contrib import messages
@@ -22,28 +23,15 @@ def superuser_required(user):
 @login_required
 def user_dashboard(request):
     user = request.user
-    userid = user.id
-    user_trips = BusBooking.objects.filter(user_id=userid,booking_status='CONFIRMED')
-    user_bookings = BusBooking.objects.filter(user_id=userid)
-    # user_active_bookings = BusBooking.objects.filter(user_id=userid,bus__is_active=True)
-    total_users = request.user.__class__.objects.all()
+    confirmed_bus = BusBooking.objects.filter(user=user, booking_status='CONFIRMED').count()
+    all_bus_trips = BusBooking.objects.filter(user=user).count()
+    confirmed_train = TrainBooking.objects.filter(user=user, booking_status='CONFIRMED').count()
     context = {
-        'total_trips':user_trips.count() ,
-        # 'active_bookings' :user_active_bookings.count() ,
-        'My_bookings' :user_bookings.count() ,
-        'total_users' :total_users.count() ,
+        'total_trips': confirmed_bus + confirmed_train, # Combined confirmed trips
+        'My_bus_trips': all_bus_trips,
+        'My_train_trips': confirmed_train,
     }
     return render(request, 'user_dashboard/user_dashboard.html',context)
-
-@login_required
-def user_bookings(request):
-    user = request.user
-    userid = user.id
-    bookings = BusBooking.objects.filter(user_id=userid).order_by('-booked_at')
-    context={
-        'bookings':bookings
-    }
-    return render(request,'dashboard/bookings.html',context)
 
 @login_required
 def user_profile(request):
@@ -93,3 +81,23 @@ def edit_profile(request,pk):
     profile_form = ProfileForm(instance=profile)
     return render(request,'user_dashboard/edit_profile.html',{'user_form':user_form,'profile_form':profile_form,'title':'Edit Profile'})
         
+
+@login_required
+def user_bus_bookings(request):    
+    user = request.user
+    userid = user.id
+    bookings = BusBooking.objects.filter(user_id=userid).order_by('-booked_at')
+    context={
+        'bookings':bookings
+    }
+    return render(request,'user_dashboard/user_bus_bookings.html',context)     
+
+@login_required
+def user_train_bookings(request):
+    user = request.user
+    userid = user.id
+    bookings = TrainBooking.objects.filter(user_id=userid).order_by('-booked_at')
+    context={
+        'bookings':bookings
+    }
+    return render(request,'user_dashboard/user_train_bookings.html',context)  

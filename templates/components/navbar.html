@@ -37,20 +37,21 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item {% if request.path == '/bus/search/' and request.GET.from and request.GET.to %}
-                            active bg-info{% endif %}" href="/">🚌 Buses</a></li>
-                        <li><a class="dropdown-item {% if request.path == '/flights/' %}
-                            active bg-info{% endif %}" href="/flights/">✈ Flights</a></li>
-                        <li><a class="dropdown-item {% if request.path == '/hotels/' %}
-                            active bg-info{% endif %}" href="/hotels/">🏨 Hotels</a></li>
-                        <li><a class="dropdown-item {% if request.path == '/trains/' %}
-                            active bg-info{% endif %}" href="/trains/">🚆 Trains</a></li>
+                            active bg-info{% endif %}" href="/?type=bus">🚌 Buses</a></li>
+                        <li><a class="dropdown-item {% if request.GET.type == 'flight' %}
+                            active bg-info{% endif %}" href="/?type=flight">✈ Flights</a></li>
+                        <li><a class="dropdown-item {% if request.GET.type == 'train' %}
+                                active bg-info{% endif %}" href="/?type=train">🚆 Trains</a></li>
+                        <li><a class="dropdown-item {% if request.GET.type == 'hotel' %}
+                            active bg-info{% endif %}" href="/?type=hotel">🏨 Hotels</a></li>
                     </ul>
                 </li>
                 <!-- <li class="nav-item">
                     <a class="nav-link justify-content-md-center" href="#">Offers</a>
                 </li> -->
                 <li class="nav-item">
-                    <a class="nav-link justify-content-md-center {% if request.path == '/contact/' %}active{% endif %}" href="/contact/">Contact</a>
+                    <a class="nav-link justify-content-md-center {% if request.path == '/contact/' %}active{% endif %}"
+                        href="/contact/">Contact</a>
                 </li>
                 {% if request.user.is_authenticated %}
                 <li class="nav-item">

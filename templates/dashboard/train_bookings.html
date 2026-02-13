@@ -96,6 +96,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% if bookings %}
                         {% for booking in bookings %}
                         <tr>
                             <td class="text-muted ps-3">{{ forloop.counter }}</td>
@@ -151,7 +152,8 @@
                                 {{ booking.booked_at|date:"H:i" }}
                             </td>
                         </tr>
-                        {% empty %}
+                        {% endfor %}
+                        {% else %}
                         <tr>
                             <td colspan="8" class="text-center py-5">
                                 <div class="py-4">
@@ -160,7 +162,7 @@
                                 </div>
                             </td>
                         </tr>
-                        {% endfor %}
+                        {% endif %}
                     </tbody>
                 </table>
             </div>

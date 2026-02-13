@@ -116,10 +116,17 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/user_dashboard/user_bookings/"
-                        class="nav-link {% if request.path == '/user_dashboard/user_bookings/' %}active{% endif %}">
+                    <a href="/user_dashboard/user_bus_bookings/"
+                        class="nav-link {% if request.path == '/user_dashboard/user_bus_bookings/' %}active{% endif %}">
                         <i class=" bi bi-ticket-perforated mx-2"></i>
-                        <p>My Bookings</p>
+                        <p>Bus Bookings</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/user_dashboard/user_train_bookings/"
+                        class="nav-link {% if request.path == '/user_dashboard/user_train_bookings/' %}active{% endif %}">
+                        <i class=" bi bi-ticket-perforated mx-2"></i>
+                        <p>Train Bookings</p>
                     </a>
                 </li>
                 <li class="nav-item">
