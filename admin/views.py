@@ -1,7 +1,8 @@
 from django.shortcuts import render ,redirect,get_object_or_404
 from bus_app.models import BusModel,BusBooking,City
 from train_app.models import TrainModel,TrainCoach,TrainBooking
-from admin.forms import BusForm , UserForm, CityForm, TrainForm, TrainCoachForm
+from flight_app.models import FlightModel,FlightClass,Airline,FlightBooking
+from admin.forms import BusForm , UserForm, CityForm, TrainForm, TrainCoachForm, FlightForm, FlightClassForm
 from django.forms import inlineformset_factory
 from django import forms
 from django.contrib import messages
@@ -214,6 +215,7 @@ def add_train(request):
             train_instance = form.save()
             formset.instance = train_instance
             formset.save()
+            messages.success(request, "Train added successfully!")
             return redirect('train_list')
     else:
         form = TrainForm()
@@ -284,7 +286,123 @@ def delete_train(request,pk):
         messages.success(request, f"Train '{trainname}' has been deleted successfully!") 
     return redirect('train_list')
         
-   
+# Flight Views
+@login_required
+def flight_list(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    flights = FlightModel.objects.prefetch_related('classes').all().order_by('-created_at')
+    paginator = Paginator(flights, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request,'dashboard/flight_list.html',{'page_obj':page_obj})
+
+@login_required
+def add_flight(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    
+    ClassFormSet = inlineformset_factory(
+        FlightModel, 
+        FlightClass, 
+        fields=['class_type', 'total_seats', 'available_seats', 'base_price', 'baggage_check_in', 'baggage_cabin'],
+        extra=1, 
+        can_delete=True,
+        widgets={
+            'class_type': forms.Select(attrs={'class': 'form-control'}),
+            'total_seats': forms.NumberInput(attrs={'class': 'form-control'}),
+            'available_seats': forms.NumberInput(attrs={'class': 'form-control'}),
+            'base_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'baggage_check_in': forms.TextInput(attrs={'class': 'form-control'}),
+            'baggage_cabin': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+    )
+    
+    if request.method == 'POST':
+        form = FlightForm(request.POST)
+        formset = ClassFormSet(request.POST, prefix='classes')
+
+        if form.is_valid() and formset.is_valid():
+            flight_instance = form.save()
+            formset.instance = flight_instance
+            formset.save()
+            messages.success(request,"Flight added successfully!")
+            return redirect('flight_list')
+    else:
+        form = FlightForm()
+        formset = ClassFormSet(prefix='classes')
+
+    return render(request, 'dashboard/add_flight.html', {
+        'form': form,
+        'formset': formset
+    })
+    
+@login_required
+def edit_flight(request,pk):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    
+    flight = get_object_or_404(FlightModel, pk=pk)
+    ClassFormSet = inlineformset_factory(
+        FlightModel, 
+        FlightClass, 
+        fields=['class_type', 'total_seats', 'available_seats', 'base_price', 'baggage_check_in', 'baggage_cabin'],
+        extra=1, 
+        can_delete=True,
+        widgets={
+            'class_type': forms.Select(attrs={'class': 'form-control'}),
+            'total_seats': forms.NumberInput(attrs={'class': 'form-control'}),
+            'available_seats': forms.NumberInput(attrs={'class': 'form-control'}),
+            'base_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'baggage_check_in': forms.TextInput(attrs={'class': 'form-control'}),
+            'baggage_cabin': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+    )
+    
+    if request.method == 'POST':
+        form = FlightForm(request.POST,instance=flight)
+        formset = ClassFormSet(request.POST,instance=flight,prefix='classes')
+
+        if form.is_valid() and formset.is_valid():
+            flight_instance = form.save()
+            formset.instance = flight_instance
+            formset.save()
+            messages.success(request,"Flight added successfully!")
+            return redirect('flight_list')
+    else:
+        form = FlightForm(instance=flight)
+        formset = ClassFormSet(instance=flight, prefix='classes')
+
+    return render(request, 'dashboard/edit_flight.html', {
+        'form': form,
+        'formset': formset
+    })
+
+@login_required
+def change_flight_status(request,pk):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    
+    flight = get_object_or_404(FlightModel, pk=pk)
+    flight.is_active = not flight.is_active
+    flight.save()
+    status_str = "Activated" if flight.is_active else "Deactivated"
+    flightname = flight.airline.name
+    messages.success(request, f"Flight '{flightname}' has been {status_str}.")
+    return redirect('flight_list')
+
+@login_required
+def delete_flight(request,pk):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    
+    if request.method == 'POST':
+        flight = get_object_or_404(FlightModel, pk=pk)
+        flightname = flight.airline.name
+        flight.delete() 
+        messages.success(request, f"Flight '{flightname}' has been deleted successfully!") 
+    return redirect('flight_list')
+
 # Booking Views
 @login_required
 def bus_bookings(request):
@@ -307,6 +425,17 @@ def train_bookings(request):
         'bookings':bookings
     }
     return render(request,'dashboard/train_bookings.html',context)  
+
+@login_required
+def flight_bookings(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    
+    bookings = FlightBooking.objects.all().order_by('-booked_at')
+    context={
+        'bookings':bookings
+    }
+    return render(request,'dashboard/flight_bookings.html',context)
 
 # Users Views
 @login_required

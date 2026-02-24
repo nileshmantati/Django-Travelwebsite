@@ -1,14 +1,14 @@
 {% extends 'dashboard/admin_base.html' %}
+
 {% block content %}
 
 <style>
-    .train-card {
-        /* border-radius: 16px; */
+    .flight-card {
         border: none;
         background: #ffffff;
     }
 
-    .train-table thead th {
+    .flight-table thead th {
         font-size: 14.5px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -18,7 +18,7 @@
         border: none;
     }
 
-    .train-table tbody tr {
+    .flight-table tbody tr {
         transition: all 0.2s ease;
     }
 
@@ -37,7 +37,7 @@
         font-size: 0.9rem;
     }
 
-    .train-table tbody tr:hover {
+    .flight-table tbody tr:hover {
         background: rgba(13, 110, 253, 0.06) !important;
         transform: translateY(-1px) scale(1.003);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
@@ -61,11 +61,11 @@
 </style>
 
 <div class="content-wrapper p-3">
-    <div class="card train-card shadow-sm">
+    <div class="card flight-card shadow-sm">
         <div class="card-header bg-white border-0 pt-4 pb-2">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <h4 class="mb-0 fw-bold text-dark">
-                    <i class="bi bi-ticket-perforated-fill text-danger me-3"></i>Bookings Management
+                    <i class="bi bi-ticket-perforated-fill text-danger me-2"></i>Flight Bookings Management
                 </h4>
 
                 <div class="d-flex gap-2">
@@ -74,77 +74,83 @@
                         <input type="text" id="bookingSearch" class="form-control bg-light border-start-0"
                             placeholder="Search passenger...">
                     </div>
-                    <!-- <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-funnel"></i></button> -->
                 </div>
             </div>
         </div>
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table train-table align-middle mb-0 mt-2" id="bookingTable">
+                <table class="table flight-table align-middle mb-0 mt-2" id="bookingTable">
                     <thead class="bg-body-secondary">
                         <tr>
                             <th class="ps-3">#</th>
-                            <th>pnr_number</th>
+                            <th>Booking ID</th>
                             <th>Passenger & User</th>
-                            <th>Train / Route</th>
+                            <th>Flight / Route</th>
                             <th>Schedule</th>
-                            <th>Seat</th>
+                            <th>Class/Seat</th>
                             <th>Fare</th>
                             <th>Status</th>
                             <th>Booked On</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% if bookings %}
                         {% for booking in bookings %}
                         <tr>
                             <td class="text-muted ps-3">{{ forloop.counter }}</td>
-                            <td class="pnr">{{booking.pnr_number}}</td>
+                            <td class="pnr">{{ booking.booking_id }}</td>
                             <td>
                                 <div class="fw-bold text-dark">{{ booking.passenger_name }}</div>
                                 <div class="small text-muted">
-                                    <i class="bi bi-person-circle"></i> {{ booking.user.username }} | <i
-                                        class="bi bi-telephone"></i> {{ booking.passenger_phone }}
+                                    <i class="bi bi-person-circle"></i> {{ booking.user.username }} |
+                                    <i class="bi bi-gender-ambiguous"></i> {{ booking.passenger_gender|default:"N/A" }}
                                 </div>
                             </td>
 
                             <td>
-                                <div class="fw-bold text-primary">{{ booking.train.train_name }}</div>
+                                <div class="fw-bold text-primary">{{ booking.flight.airline.name }} - 
+                                    {{booking.flight.flight_number }}</div>
                                 <div class="small text-muted text-truncate" style="max-width: 180px;">
-                                    {{ booking.train.source.name }} <i class="bi bi-arrow-right mx-1"></i>
-                                    {{booking.train.destination.name }}
+                                    {{ booking.flight.source.name }} <i class="bi bi-arrow-right mx-1"></i>
+                                    {{ booking.flight.destination.name }}
                                 </div>
                             </td>
 
                             <td>
-                                <div class="small fw-bold text-dark">{{ booking.train.travel_date|date:"d M, Y" }}</div>
+                                <div class="small fw-bold text-dark">{{ booking.flight.travel_date|date:"d M, Y" }}
+                                </div>
                                 <div class="badge bg-light text-dark fw-normal border" style="font-size: 10px;">
-                                    <i class="bi bi-clock me-1"></i>{{ booking.train.departure_time|date:"h:i A" }}
+                                    <i class="bi bi-clock me-1"></i>{{ booking.flight.departure_time|time:"h:i A" }}
                                 </div>
                             </td>
 
                             <td>
-                                <div class="text-center bg-black rounded p-1 border">
-                                    <small class="fw-bold">{{ booking.seat_number }}</small>
+                                <div class="badge bg-dark rounded px-2 py-1 mb-1" style="font-size: 10px;">
+                                    {{ booking.flight_class.get_class_type_display }}
+                                </div>
+                                <div class="small fw-bold text-danger">Seat: {{ booking.seat_number|default:"N/A" }}
                                 </div>
                             </td>
 
-                            <td><span class="price-badge">₹{{ booking.coach.price }}</span></td>
+                            <td><span class="price-badge">₹{{ booking.price_at_booking }}</span></td>
 
                             <td>
                                 {% if booking.booking_status == 'CONFIRMED' %}
-                                <span class="badge bg-success-subtle text-success"><span
-                                        class="status-dot bg-success"></span>Confirmed</span>
+                                <span class="badge bg-success-subtle text-success">
+                                    <span class="status-dot bg-success"></span>Confirmed
+                                </span>
                                 {% elif booking.booking_status == 'PENDING' %}
-                                <span class="badge bg-warning-subtle text-warning"><span
-                                        class="status-dot bg-warning"></span>Pending</span>
+                                <span class="badge bg-warning-subtle text-warning">
+                                    <span class="status-dot bg-warning"></span>Pending
+                                </span>
                                 {% else %}
-                                <span class="badge bg-danger-subtle text-danger"><span
-                                        class="status-dot bg-danger"></span>Cancelled</span>
+                                <span class="badge bg-danger-subtle text-danger">
+                                    <span class="status-dot bg-danger"></span>Cancelled
+                                </span>
                                 {% endif %}
                                 <div class="small text-muted mt-1">
-                                    Pay: {{ booking.payment_status|title }}</div>
+                                    Pay: {{ booking.payment_status|title }}
+                                </div>
                             </td>
 
                             <td class="small text-muted">
@@ -152,17 +158,16 @@
                                 {{ booking.booked_at|date:"H:i" }}
                             </td>
                         </tr>
-                        {% endfor %}
-                        {% else %}
+                        {% empty %}
                         <tr>
-                            <td colspan="8" class="text-center py-5">
+                            <td colspan="9" class="text-center py-5">
                                 <div class="py-4">
                                     <i class="bi bi-inbox text-muted display-4"></i>
                                     <p class="text-muted mt-2">No bookings records found.</p>
                                 </div>
                             </td>
                         </tr>
-                        {% endif %}
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

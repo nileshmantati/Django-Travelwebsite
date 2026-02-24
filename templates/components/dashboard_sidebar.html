@@ -67,6 +67,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="/dashboard/flights/"
+                        class="nav-link {% if request.path == '/dashboard/flights/' %}active{% endif %}"><i
+                            class="bi bi-airplane-engines mx-2"></i>
+                        <p>Flights</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="/dashboard/bus_bookings/"
                         class="nav-link {% if request.path == '/dashboard/bus_bookings/' %}active{% endif %}">
                         <i class=" bi bi-ticket-perforated mx-2"></i>
@@ -78,6 +85,13 @@
                         class="nav-link {% if request.path == '/dashboard/train_bookings/' %}active{% endif %}">
                         <i class=" bi bi-ticket-perforated mx-2"></i>
                         <p>Train Bookings</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/dashboard/flight_bookings/"
+                        class="nav-link {% if request.path == '/dashboard/flight_bookings/' %}active{% endif %}">
+                        <i class=" bi bi-ticket-perforated mx-2"></i>
+                        <p>Flight Bookings</p>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -127,6 +141,13 @@
                         class="nav-link {% if request.path == '/user_dashboard/user_train_bookings/' %}active{% endif %}">
                         <i class=" bi bi-ticket-perforated mx-2"></i>
                         <p>Train Bookings</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/user_dashboard/user_flight_bookings/"
+                        class="nav-link {% if request.path == '/user_dashboard/user_flight_bookings/' %}active{% endif %}">
+                        <i class=" bi bi-ticket-perforated mx-2"></i>
+                        <p>Flight Bookings</p>
                     </a>
                 </li>
                 <li class="nav-item">

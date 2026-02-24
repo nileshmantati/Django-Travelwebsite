@@ -1,6 +1,7 @@
 from django.shortcuts import render,get_object_or_404,redirect
-from bus_app.models import BusModel, BusBooking, City
-from train_app.models import TrainModel, TrainBooking
+from bus_app.models import BusBooking
+from train_app.models import TrainBooking
+from flight_app.models import FlightBooking
 from django.contrib.auth.models import User
 from user_dashboard.forms import UserProfileForm, ProfileForm
 from django.contrib import messages
@@ -101,3 +102,13 @@ def user_train_bookings(request):
         'bookings':bookings
     }
     return render(request,'user_dashboard/user_train_bookings.html',context)  
+
+@login_required
+def user_flight_bookings(request):
+    user = request.user
+    userid = user.id
+    bookings = FlightBooking.objects.filter(user_id=userid).order_by('-booked_at')
+    context = {
+        'bookings': bookings
+    }
+    return render(request, 'user_dashboard/user_flight_bookings.html', context)

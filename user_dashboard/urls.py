@@ -7,4 +7,5 @@ urlpatterns = [
     path('user_profile/edit_profile/<int:pk>/', views.edit_profile, name="edit_profile"),    
     path('user_bus_bookings/', views.user_bus_bookings, name="user_bus_bookings"),
     path('user_train_bookings/', views.user_train_bookings, name="user_train_bookings"),
+    path('user_flight_bookings/', views.user_flight_bookings, name="user_flight_bookings"),
 ]

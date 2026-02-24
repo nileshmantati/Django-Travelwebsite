@@ -1,6 +1,7 @@
 from django import forms
 from bus_app.models import BusModel,City
 from train_app.models import TrainModel, TrainCoach
+from flight_app.models import FlightModel,FlightClass
 from django.contrib.auth.models import User
 import ast
 
@@ -133,3 +134,36 @@ class CityForm(forms.ModelForm):
     def clean_name(self):
         name = self.cleaned_data.get('name')
         return name.title() if name else name
+    
+class FlightForm(forms.ModelForm):
+    class Meta:
+        model = FlightModel
+        fields = [
+            'airline', 'flight_number', 'source', 'destination', 
+            'travel_date', 'departure_time', 'arrival_time', 'is_active'
+        ]
+        
+        widgets = {
+            'airline': forms.Select(attrs={'class': 'form-control'}),
+            'flight_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. AI-101'}),
+            'source': forms.Select(attrs={'class': 'form-control'}),
+            'destination': forms.Select(attrs={'class': 'form-control'}),
+            'travel_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'departure_time': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'arrival_time': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input ms-2'}),
+        }
+        
+class FlightClassForm(forms.ModelForm):
+    class Meta:
+        model = FlightClass
+        fields = ['class_type', 'total_seats', 'available_seats', 'base_price', 'baggage_check_in', 'baggage_cabin']
+        
+        widgets = {
+            'class_type': forms.Select(attrs={'class': 'form-control'}),
+            'total_seats': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0'}),
+            'available_seats': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0'}),
+            'base_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00'}),
+            'baggage_check_in': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '15 KG'}),
+            'baggage_cabin': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '7 KG'}),
+        }

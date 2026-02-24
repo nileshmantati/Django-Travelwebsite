@@ -24,9 +24,17 @@ urlpatterns = [
     path('train/change_train_status/<int:pk>/', views.change_train_status, name='change_train_status'),
     path('train/delete_train/<int:pk>/',views.delete_train,name="delete_train"),
     
+    # Flight Urls
+    path('flights/',views.flight_list,name="flight_list"),
+    path('flight/add_flight/',views.add_flight,name="add_flight"),
+    path('flight/edit_flight/<int:pk>/',views.edit_flight,name="edit_flight"),
+    path('flight/change_flight_status/<int:pk>/', views.change_flight_status, name='change_flight_status'),
+    path('flight/delete_flight/<int:pk>/',views.delete_flight,name="delete_flight"),
+    
     # All Bokkings
     path('bus_bookings/', views.bus_bookings, name="bus_bookings"),
     path('train_bookings/', views.train_bookings, name="train_bookings"),
+    path('flight_bookings/', views.flight_bookings, name="flight_bookings"),
     
     # Users urls
     path('users/', views.users, name="users"),
