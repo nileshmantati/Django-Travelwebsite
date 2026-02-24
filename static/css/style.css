@@ -12,6 +12,7 @@
     font-weight: 700 !important;
     color: red !important;
 }
+
 .search_bg {
     position: absolute;
     width: 100%;
@@ -270,6 +271,121 @@
     transform: translateX(3px);
 }
 
-.recent_date{
+.recent_date {
     font-size: .8rem;
+}
+
+/* --- Grid Layout --- */
+.dest-grid-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* Mobile: 1 column */
+    gap: 20px;
+}
+
+@media (min-width: 992px) {
+    .dest-grid-container {
+        grid-template-columns: 1fr 1fr;
+        /* Desktop: Half Left, Half Right */
+    }
+}
+
+.dest_right_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    /* Responsive columns */
+    gap: 20px;
+}
+
+.dest_col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+/* --- Box Styles --- */
+.dest_box {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+}
+
+.dest_box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease-in-out;
+    display: block;
+}
+
+.dest_box:hover img {
+    transform: scale(1.2);
+}
+
+/* Red Overlay on Hover */
+.dest_box::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(220, 53, 70, 0.53);
+    /* #dc354687 */
+    opacity: 0;
+    transition: 0.3s;
+    z-index: 1;
+}
+
+.dest_box:hover::after {
+    opacity: 1;
+}
+
+/* --- Text Centering --- */
+.dest_text_center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    z-index: 2;
+    text-align: center;
+    width: 100%;
+}
+
+.dest_text_center h3,
+.dest_text_center h3 a {
+    color: white;
+    text-decoration: none;
+    font-weight: 400;
+    margin: 0;
+}
+
+/* --- Specific for Large Box --- */
+.dest_box.large {
+    height: 100%;
+    min-height: 400px;
+}
+
+.percentage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.percentage h1 {
+    font-size: 7rem;
+    margin: 0;
+    font-weight: bold;
+}
+
+.percentage h6 {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+/* --- Buttons --- */
+.btn-book {
+    padding: 10px 30px;
+    font-size: 1.2rem;
 }

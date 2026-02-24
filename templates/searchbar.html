@@ -18,6 +18,13 @@
         /* padding-bottom: 5px; */
         transition: all ease-in-out 100ms;
     }
+
+    #fromIcon,
+    #toIcon {
+        transition: transform 0.8s ease;
+        display: flex;
+        justify-content: center;
+    }
 </style>
 {% endblock %}
 
@@ -53,7 +60,7 @@
                     <!-- FROM -->
                     <div class="col-12 col-md">
                         <div class="position-relative d-flex justify-content-center align-items-center ps-3">
-                            <i class="bi bi-geo-alt"></i>
+                            <i id="fromIcon" class="bi bi-record-circle fa-lg me-2 text-primary"></i>
                             <input type="text" id="fromCity" name="from" value="{{ from_city }}"
                                 class="form-control border-0 shadow-none bg-transparent swap-input"
                                 placeholder="Leaving From" autocomplete="off" onkeyup="filterCities(this, 'fromList')">
@@ -71,7 +78,7 @@
                     <!-- TO -->
                     <div class="col-12 col-sm">
                         <div class="position-relative d-flex justify-content-center align-items-center ps-3">
-                            <i class="bi bi-geo-alt"></i>
+                            <i id="toIcon" class="bi bi-geo-alt-fill fa-lg me-2 text-danger"></i>
                             <input type="text" id="toCity" name="to" value="{{ to_city }}"
                                 class="form-control border-0 shadow-none bg-transparent swap-input"
                                 placeholder="Going To" autocomplete="off" onkeyup="filterCities(this, 'toList')">
@@ -131,19 +138,30 @@
     // SwitchSearch
     function switchSearch(search_type, element) {
         document.getElementById('inputType').value = search_type;
+        const fromIcon = document.getElementById('fromIcon');
+        const toIcon = document.getElementById('toIcon');
+
         if (search_type === 'bus') {
             document.getElementById('fromCity').placeholder = 'Leaving From';
             document.getElementById('toCity').placeholder = 'Going To';
+            fromIcon.className = 'bi bi-record-circle fa-lg me-2 text-primary';
+            toIcon.className = 'bi bi-geo-alt-fill fa-lg me-2 text-danger';
         } else if (search_type === 'flight') {
-            document.getElementById('fromCity').placeholder = 'From City';
-            document.getElementById('toCity').placeholder = 'To City';
+            document.getElementById('fromCity').placeholder = 'From';
+            document.getElementById('toCity').placeholder = 'To';
+            fromIcon.className = 'fa-solid fa-plane-departure fa-lg me-2 text-danger';
+            toIcon.className = 'fa-solid fa-plane-arrival fa-lg me-2 text-danger';
         } else if (search_type === 'train') {
             document.getElementById('fromCity').placeholder = 'From Station';
             document.getElementById('toCity').placeholder = 'To Station';
+            fromIcon.className = 'bi bi-train-front-fill fa-lg me-2 text-success';
+            toIcon.className = 'bi bi-geo-fill fa-lg me-2 text-danger';
         }
         else if (search_type === 'hotel') {
             document.getElementById('fromCity').placeholder = 'From Station';
             document.getElementById('toCity').placeholder = 'To Station';
+            fromIcon.className = 'bi bi-buildings-fill fa-lg me-2 text-warning';
+            toIcon.className = 'bi bi-geo-alt fa-lg me-2';
         }
         document.querySelectorAll('.tab-link').forEach(link => {
             link.classList.remove('active-tab');

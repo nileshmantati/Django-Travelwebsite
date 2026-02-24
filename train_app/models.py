@@ -40,6 +40,17 @@ class TrainCoach(models.Model):
         return f"{self.train.train_name} - {self.coach_type}"
 
 class TrainBooking(models.Model):
+    BOOKING_STATUS = (
+        ('PENDING', 'Pending'),
+        ('CONFIRMED', 'Confirmed'),
+        ('CANCELLED', 'Cancelled'),
+    )
+    PAYMENT_STATUS = (
+        ('PENDING', 'Pending'),
+        ('SUCCESS', 'Success'),
+        ('FAILED', 'Failed'),
+        ('CANCELLED', 'Cancelled'),
+    )
     pnr_number = models.CharField(max_length=12, unique=True, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     train = models.ForeignKey(TrainModel, on_delete=models.CASCADE)
@@ -53,9 +64,26 @@ class TrainBooking(models.Model):
         blank=True
     )
     seat_number = models.CharField(max_length=10)
-    booking_status = models.CharField(max_length=20, default='CONFIRMED')
+    booking_status = models.CharField(max_length=20,
+        choices=BOOKING_STATUS,
+        default='PENDING')
+    payment_status = models.CharField(
+        max_length=20,
+        choices=PAYMENT_STATUS,
+        default='PENDING')
     booked_at = models.DateTimeField(auto_now_add=True,null=True)
 
+    class Meta:
+        unique_together = ('coach', 'seat_number')
+        
+    def cancel(self):
+        if self.booking_status != 'CANCELLED':
+            self.booking_status = 'CANCELLED'
+            self.payment_status = 'CANCELLED'
+            self.coach.available_seats += 1  
+            self.train.save()
+            self.save()
+            
     def save(self, *args, **kwargs):
         if not self.pnr_number:
             import uuid

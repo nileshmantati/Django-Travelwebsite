@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 
 def train_search(request):
     train_list = []
@@ -112,26 +113,36 @@ def book_train(request):
         passenger_age = request.POST.get('passenger_age')
         passenger_gender = request.POST.get('passenger_gender')
         
-        coach = get_object_or_404(TrainCoach, id=coach_id)
-        
-        try:
-            # Model ke .save() method mein pehle se seat-minus logic hai
-            booking = TrainBooking.objects.create(
-                user=request.user,
-                train=coach.train,
-                coach=coach,
-                passenger_name=passenger_name,
-                passenger_age=passenger_age,
-                passenger_gender=passenger_gender,
-                seat_number=f"{coach.coach_type}-{coach.available_seats}"
-            )
-            return redirect('ticket_detail', pnr=booking.pnr_number)
+        with transaction.atomic():
+            coach = TrainCoach.objects.select_for_update().get(id=coach_id)
             
-        except ValueError as e:
-            return render(request, 'error.html', {'message': str(e)})
+            if coach.available_seats <= 0:
+                messages.error(request, f"Sorry, no seats available in {coach.coach_type}")
+                return redirect('home')
+            seat_no = (coach.total_seats - coach.available_seats) + 1
+            assigned_seat = f"{coach.coach_type}-{seat_no}"
+
+            try:
+                booking = TrainBooking.objects.create(
+                    user=request.user,
+                    train=coach.train,
+                    coach=coach,
+                    passenger_name=passenger_name,
+                    passenger_age=passenger_age,
+                    passenger_gender=passenger_gender,
+                    seat_number=assigned_seat
+                    # seat_number=f"{coach.coach_type}-{coach.available_seats}"
+                )
+                coach.available_seats -= 1
+                coach.save()
+                messages.success(request, f"Booking successful! Your seat is {assigned_seat}")
+                return redirect('my_bookings')
+                
+            except ValueError as e:
+                return render(request, 'error.html', {'message': str(e)})
 
     return redirect('home')
 
-def ticket_detail(request, pnr):
+def train_ticket_detail(request, pnr):
     booking = get_object_or_404(TrainBooking, pnr_number=pnr)
     return render(request, 'trains/ticket_confirmation.html', {'booking': booking})

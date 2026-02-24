@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 20px;">
+                <div class="bg-primary p-4 text-white d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, #213d77, #3a5ba0) !important;">
+                    <div>
+                        <h4 class="mb-0 fw-bold"><i class="bi bi-train-front-fill me-2"></i>E-Ticket</h4>
+                        <small class="opacity-75">Indian Railways - Electronic Reservation Slip</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold fs-5">PNR: {{ booking.pnr_number }}</div>
+                        <span class="badge bg-success">Status: {{ booking.booking_status }}</span>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="p-4 border-bottom bg-light">
+                        <div class="row text-center align-items-center">
+                            <div class="col-4">
+                                <h3 class="fw-bold mb-0">{{ booking.train.departure_time|time:"H:i" }}</h3>
+                                <div class="fw-semibold text-uppercase">{{ booking.train.source.city_name }}</div>
+                                <small class="text-muted">{{ booking.train.travel_date|date:"D, d M" }}</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="small text-muted mb-1">{{ booking.train.train_number }}</div>
+                                <div class="position-relative">
+                                    <hr style="border-top: 2px dashed #bbb;">
+                                    <i class="bi bi-arrow-right-circle-fill position-absolute top-50 start-50 translate-middle bg-light px-2 text-primary fs-5"></i>
+                                </div>
+                                <div class="small fw-bold mt-1 text-primary">{{ booking.coach.get_coach_type_display }}</div>
+                            </div>
+                            <div class="col-4">
+                                <h3 class="fw-bold mb-0">{{ booking.train.arrival_time|time:"H:i" }}</h3>
+                                <div class="fw-semibold text-uppercase">{{ booking.train.destination.city_name }}</div>
+                                <small class="text-muted">{{ booking.train.travel_date|date:"D, d M" }}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <h6 class="fw-bold text-muted mb-3"><i class="bi bi-people-fill me-2"></i>PASSENGER INFORMATION</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle">
+                                <thead class="table-light">
+                                    <tr class="small text-uppercase">
+                                        <th>Name</th>
+                                        <th>Age/Gender</th>
+                                        <th>Coach/Seat</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold">{{ booking.passenger_name }}</td>
+                                        <td>{{ booking.passenger_age }} / {{ booking.passenger_gender|slice:":1" }}</td>
+                                        <td><span class="badge bg-primary">{{ booking.coach.coach_type }}</span> - {{ booking.seat_number }}</td>
+                                        <td class="text-success fw-bold">CNF</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="px-4 pb-4">
+                        <div class="alert alert-warning border-0 small mb-0">
+                            <strong>Note:</strong> Please carry a valid original Photo ID proof during the journey. Arrive at the station at least 30 minutes before departure.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center">
+                    <button class="btn btn-outline-dark btn-sm" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i> Print Ticket
+                    </button>
+                    <a href="{% url 'home' %}" class="btn btn-primary btn-sm px-4">Book Another Train</a>
+                </div>
+            </div>
+            
+            <p class="text-center mt-4 text-muted small">Powered by Your Railway App &copy; 2026</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .btn, .navbar, footer { display: none !important; }
+        .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+        .card { box-shadow: none !important; border: 1px solid #ccc !important; }
+    }
+    .badge { font-weight: 500; }
+</style>
+{% endblock %}

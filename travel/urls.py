@@ -13,5 +13,5 @@ urlpatterns = [
     path('hotels/', views.coming_soon, {'service_name': 'hotel'}, name='hotel_booking'),
     path('contact/', views.coming_soon, {'service_name': 'contact'}, name='contact'),
     path('my-bookings/', views.my_bookings, name='my_bookings'),
-    path('cancel-booking/<str:pk>/', views.cancel_booking, name='cancel_booking'),
+    path('cancel-booking/<str:booking_type>/<str:pk>/', views.cancel_booking, name='cancel_booking'),
 ]

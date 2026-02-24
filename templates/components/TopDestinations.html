@@ -1,0 +1,100 @@
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    .top_destinations img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+<!-- Top Destinations Sction Start  -->
+<section class="top_destinations">
+    <div class="container-lg">
+        <div class="row pt-5 pb-3">
+            <div class="col-12 text-center">
+                <h2 class="pb-3 display-6 fw-medium">Top Destinations</h2>
+            </div>
+        </div>
+
+        <div class="dest-grid-container">
+            <div class="dest_left_main">
+                <div class="dest_box large">
+                    <img src="{% static '/images/big-img.a49b935c.png' %}" alt="Offer">
+                    <div class="dest_text_center">
+                        <h2 class="fs-1 mb-0">Up to</h2>
+                        <div class="percentage">
+                            <h1>50</h1>
+                            <h6><span class="fs-2">%</span><span class="fs-2">Off</span></h6>
+                        </div>
+                        <h2 class="mb-4">Holiday packages</h2>
+                        <a href="#" class="btn btn-danger btn-book">Book now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dest_right_grid">
+                <div class="dest_col">
+                    <div class="dest_box small">
+                        <img src="{% static '/images/destination1.40c89fca.png' %}" alt="">
+                        <div class="dest_text_center">
+                            <h3>China</h3>
+                        </div>
+                    </div>
+                    <div class="dest_box small">
+                        <img src="{% static '/images/destination2.54f9f938.png' %}" alt="">
+                        <div class="dest_text_center">
+                            <h3>Darjeeling</h3>
+                        </div>
+                    </div>
+                    <div class="dest_box small">
+                        <img src="{% static '/images/destination3.ba50419e.png' %}" alt="">
+                        <div class="dest_text_center">
+                            <h3>Malaysia</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="dest_col">
+                    <div class="dest_box small">
+                        <img src="{% static '/images/destination4.50780d51.png' %}" alt="">
+                        <div class="dest_text_center">
+                            <h3>Gangtok</h3>
+                        </div>
+                    </div>
+                    <div class="dest_box small">
+                        <img src="{% static '/images/destination5.73428857.png' %}" alt="">
+                        <div class="dest_text_center">
+                            <h3>Thailand</h3>
+                        </div>
+                    </div>
+                    <div class="dest_box small">
+                        <img src="{% static '/images/destination6.4540162c.png' %}" alt="">
+                        <div class="dest_text_center">
+                            <h3>Australia</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="dest_col">
+                    <div class="dest_box small">
+                        <img src="{% static '/images/destination7.db797940.png' %}" alt="">
+                        <div class="dest_text_center">
+                            <h3>London</h3>
+                        </div>
+                    </div>
+                    <div class="dest_box small">
+                        <img src="{% static '/images/destination8.03d4b7a9.png' %}" alt="">
+                        <div class="dest_text_center">
+                            <h3>USA</h3>
+                        </div>
+                    </div>
+                    <div class="dest_view_all d-flex ">
+                        <a href="#"
+                            class="btn btn-danger btn-lg w-100 d-flex align-items-end justify-content-center fs-6">View
+                            all</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

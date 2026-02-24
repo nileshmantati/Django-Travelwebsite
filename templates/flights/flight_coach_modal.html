@@ -1,0 +1,101 @@
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Radio Button styling for Flight Class selection */
+    .btn-check:checked+.btn-outline-danger {
+        background-color: #fef2f2;
+        border-color: #d32f2f !important;
+        color: #d32f2f;
+        box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2);
+    }
+
+    .form-control-sm,
+    .form-select-sm {
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* Modern Red Action Button */
+    .btn-payment {
+        background-color: #d32f2f !important;
+        border: none;
+        color: white !important;
+        transition: all 0.3s ease;
+    }
+
+    .btn-payment:hover {
+        background-color: #b71c1c !important;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+<div class="p-3">
+    <form id="bookingForm" method="POST" action="{% url 'book_flight' %}">
+        {% csrf_token %}
+        <input type="hidden" name="flight_id" value="{{ flight.id }}">
+
+        <h6 class="fw-bold mb-3"><i class="bi bi-armchair-fill text-danger me-2"></i> Select Cabin Class</h6>
+        <div class="row g-2 mb-4">
+            {% for class_obj in flight.classes.all %}
+            <div class="col-6">
+                <input type="radio" class="btn-check" name="class_id" id="class_{{ class_obj.id }}"
+                    value="{{ class_obj.id }}" {% if class_obj.available_seats == 0 %}disabled{% endif %} required>
+
+                <label class="btn btn-outline-danger w-100 text-start p-2" for="class_{{ class_obj.id }}">
+                    <div class="small fw-bold">{{ class_obj.get_class_type_display }}</div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">₹{{ class_obj.base_price }}</span>
+                        <span
+                            class="badge {% if class_obj.available_seats > 0 %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}"
+                            style="font-size: 0.7rem;">
+                            {% if class_obj.available_seats > 0 %} {{ class_obj.available_seats }} Left{% else %}Sold
+                            Out{% endif %}
+                        </span>
+                    </div>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h6 class="fw-bold mb-3"><i class="bi bi-person-badge-fill text-danger me-2"></i> Traveler Information</h6>
+        <div class="bg-light p-3 rounded-4 border-0 shadow-sm">
+            <div class="mb-3">
+                <label class="small fw-bold text-muted mb-1">Full Name:</label>
+                <input type="text" name="passenger_name" class="form-control form-control-sm"
+                    placeholder="As per Passport/ID" required>
+            </div>
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="small fw-bold text-muted mb-1">Passport No:</label>
+                    <input type="text" name="passport_number" class="form-control form-control-sm"
+                        placeholder="Passport Number" required>
+                </div>
+                <div class="col-6">
+                    <label class="small fw-bold text-muted mb-1">Age:</label>
+                    <input type="number" name="passenger_age" class="form-control form-control-sm" min="1" max="100"
+                        placeholder="Age" required>
+                </div>
+                <div class="col-6">
+                    <label class="small fw-bold text-muted mb-1">Gender:</label>
+                    <select name="passenger_gender" class="form-select form-select-sm" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-payment w-100 fw-bold py-2 shadow rounded-3">
+                CONTINUE TO PAYMENT
+            </button>
+            <p class="text-center text-muted mt-2" style="font-size: 11px;">
+                <i class="bi bi-shield-check"></i> Secure SSL Booking • No Hidden Charges
+            </p>
+        </div>
+    </form>
+</div>

@@ -138,7 +138,7 @@ def bus_seat_view(request, pk):
     booked_seats = BusBooking.objects.filter(
         bus=bus,
         travel_date=bus.travel_date,
-        booking_status='Pending'
+        booking_status='PENDING'
     ).values_list('seat_number', flat=True)
 
     if bus.bus_seating_type == 'SLEEPER':
@@ -196,17 +196,17 @@ def customer_details(request, pk):
     if request.method == "POST":
         form = PassengerForm(request.POST, instance=booking)
         if form.is_valid():
-            form.save()
-
-            # booking.booking_status = 'CONFIRMED'
-            booking.save()
-
-            bus = booking.bus
-            bus.available_seats -= 1
-            bus.save()
+            booking_instance = form.save(commit=False)
+            booking_instance.booking_status='PENDING'
+            booking_instance.payment_status='PENDING'
+            booking_instance.save()
+            bus = booking_instance.bus
+            if bus.available_seats > 0:
+                bus.available_seats -= 1
+                bus.save()
 
             messages.success(request, "Booking confirmed successfully")
-            return redirect('my_bus_booking')
+            return redirect('my_bookings')
     else:
         form = PassengerForm(instance=booking)
 

@@ -96,6 +96,7 @@ class BusBooking(models.Model):
         ('PENDING', 'Pending'),
         ('SUCCESS', 'Success'),
         ('FAILED', 'Failed'),
+        ('CANCELLED', 'Cancelled'),
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='bookings')
     bus = models.ForeignKey(BusModel,on_delete=models.CASCADE)
@@ -127,6 +128,7 @@ class BusBooking(models.Model):
     def cancel(self):
         if self.booking_status != 'CANCELLED':
             self.booking_status = 'CANCELLED'
-            self.bus.available_seats += 1  # Restore seat
+            self.payment_status = 'CANCELLED'
+            self.bus.available_seats += 1  
             self.bus.save()
             self.save()

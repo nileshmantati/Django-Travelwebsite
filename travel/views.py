@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from bus_app.models import BusModel , BusBooking
+from bus_app.models import BusModel, BusBooking
 from train_app.models import TrainBooking
+from flight_app.models import FlightBooking
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -9,15 +10,19 @@ from .forms import LoginForm
 from django.utils import timezone
 from bus_app.views import bus_search
 from train_app.views import train_search
+from flight_app.views import flight_search
+from django.http import JsonResponse
 
 # Create your views here.
 def universal_search(request):
     search_type = request.GET.get('type')
     
-    if search_type == 'train':
-        return train_search(request)
-    elif search_type == 'bus':
+    if search_type == 'bus':
         return bus_search(request)
+    elif search_type == 'train':
+        return train_search(request)
+    elif search_type == 'flight':
+        return flight_search(request)
     else:
         messages.error(request, "Invalid search type")
         return redirect('home')
@@ -53,6 +58,9 @@ def registration_view(request):
     return render(request,'registrationpage.html',{'form':form})
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    
     if request.method == 'POST':
         form = LoginForm(request,data=request.POST)
         if form.is_valid():
@@ -82,20 +90,31 @@ def coming_soon(request, service_name):
 def my_bookings(request):
     bus_bookings = BusBooking.objects.filter(user=request.user).order_by('-booked_at')
     train_bookings = TrainBooking.objects.filter(user=request.user).order_by('-booked_at')
+    flight_bookings = FlightBooking.objects.filter(user=request.user).order_by('-booked_at')
     return render(request, 'my_bookings.html', {
         'bus_bookings': bus_bookings,
-        'train_bookings': train_bookings
+        'train_bookings': train_bookings,
+        'flight_bookings': flight_bookings
     })
 
 @login_required(login_url='login')
-def cancel_booking(request, pk):
-    booking = get_object_or_404(BusBooking, pk=pk, user=request.user)
-    
-    if booking.booking_status == 'CANCELLED':
-        messages.info(request, "Booking already cancelled.")
+def cancel_booking(request, booking_type, pk):
+    if booking_type == 'bus':
+        model = BusBooking
+    elif booking_type == 'train':
+        model = TrainBooking
+    elif booking_type == 'flight':
+        model = FlightBooking
     else:
+        messages.error(request, "Invalid booking type!")
+        return redirect('home')
+    
+    booking = get_object_or_404(model, pk=pk, user=request.user)
+    try:
         booking.cancel()
-        booking.delete()
-        messages.success(request, "Booking cancelled and seat restored.")
-
-    return redirect('my_bus_booking')
+        return JsonResponse({
+            'status': 'success', 
+            'message': f'{booking_type.capitalize()} booking cancelled successfully!'
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

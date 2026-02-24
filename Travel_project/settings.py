@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'travel',
     'bus_app',
     'train_app',
+    'flight_app',
     'user_dashboard',
     'django_crontab',
     # 'cloudinary',

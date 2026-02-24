@@ -104,36 +104,64 @@
     .page-item.disabled .page-link {
         background-color: #f8f9fa;
     }
+
+    /* background: linear-gradient(135deg, #f2f5fa 0%, #c0c6f4 100%); */
+
+    .bus-icon-wrapper {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #eff6ff 0%, #f4c0cb 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-accent);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-md container-fluid my-4">
-    <div class="row">
-        <!-- Filters -->
-        <!-- Mobile Filter Button -->
-        <div class="d-sm-none mb-3">
-            <button class="btn btn-outline-danger w-100" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas">
-                <i class="bi bi-funnel"></i> Filters
-            </button>
-        </div>
-        <aside class="col-lg-3 col-sm-4 d-none d-sm-block">
-            <div class="sticky-sidebar">
+<div class="container py-3 py-md-4">
+    <div class="row g-4">
+        <aside class="col-lg-3 d-none d-lg-block">
+            <div class="filter-sidebar shadow-sm">
                 {% include 'components/sidebar.html' %}
             </div>
         </aside>
 
         <!-- Bus Results -->
-        <div class="col-lg-9 col-sm-8">
+        <div class="col-lg-9">
+            <div class="d-flex flex-column flex-sm-row justify-content-between mb-4 px-2">
+                <div class="mb-3 mb-md-0">
+                    <h3 class="fw-bold text-dark mb-1">Available Buses</h3>
+                    <p class="text-muted mb-0 small text-capitalize"><i class="bi bi-geo-alt-fill text-danger"></i>
+                        {{from_city }}
+                        &rarr; {{ to_city }}</p>
+                </div>
+                <div class="align-content-center">
+                    <button class="btn btn-outline-danger d-lg-none col-12" data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileFilter">
+                        <i class="bi bi-sliders"></i> Filters
+                    </button>
+                </div>
+            </div>
+            
             {% if page_obj %}
             {% for data in page_obj %}
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <div class="row align-items-center row-gap-3">
                         <div class="col-md-3">
-                            <div class="bus-name fs-5 text-capitalize">{{data.bus.bus_name}}</div>
-                            <span class="bus-tag">{{ data.bus.bus_type }}</span>
-                            <span class="bus-tag">{{ data.bus.bus_seating_type }}</span>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bus-icon-wrapper">
+                                    <i class="bi bi-bus-front fs-4 text-danger"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="bus-name fs-5 text-capitalize">{{data.bus.bus_name}}</div>
+                                    <span class="bus-tag">{{ data.bus.bus_type }}</span>
+                                    <span class="bus-tag">{{ data.bus.bus_seating_type }}</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-5 text-center">
                             <div class="d-flex justify-content-between align-items-center">
@@ -251,7 +279,7 @@
     </div>
 </div>
 <!-- Mobile Offcanvas Filters -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="filterOffcanvas">
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileFilter">
     <div class="offcanvas-header border-bottom">
         <h5 class="offcanvas-title">Filters</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
