@@ -117,13 +117,42 @@
         justify-content: center;
         color: var(--primary-accent);
     }
+
+
+    .card:hover {
+        box-shadow: 0 15px 35px rgba(211, 47, 47, 0.1) !important;
+        border-color: #d32f2f !important;
+    }
+
+    .card:hover .bus-icon-wrapper i {
+        transform: scale(1.2) rotate(-10deg);
+        transition: 0.3s ease;
+    }
+
+    .seat-low {
+        animation: pulse-red 2s infinite;
+    }
+
+    @keyframes pulse-red {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-3 py-md-4">
     <div class="row g-4">
-        <aside class="col-lg-3 d-none d-lg-block">
+        <aside class="col-lg-3 d-none d-lg-block" data-aos="fade-right" data-aos-duration="800">
             <div class="filter-sidebar shadow-sm">
                 {% include 'components/sidebar.html' %}
             </div>
@@ -132,7 +161,7 @@
         <!-- Bus Results -->
         <div class="col-lg-9">
             <div class="d-flex flex-column flex-sm-row justify-content-between mb-4 px-2">
-                <div class="mb-3 mb-md-0">
+                <div class="mb-3 mb-md-0" data-aos="fade-down" data-aos-delay="100">
                     <h3 class="fw-bold text-dark mb-1">Available Buses</h3>
                     <p class="text-muted mb-0 small text-capitalize"><i class="bi bi-geo-alt-fill text-danger"></i>
                         {{from_city }}
@@ -145,10 +174,11 @@
                     </button>
                 </div>
             </div>
-            
+
             {% if page_obj %}
             {% for data in page_obj %}
-            <div class="card shadow-sm mb-4">
+            <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}"
+                data-aos-duration="800">
                 <div class="card-body">
                     <div class="row align-items-center row-gap-3">
                         <div class="col-md-3">
@@ -224,7 +254,7 @@
         </div>
         {% endfor %}
 
-        <nav aria-label="Page navigation" class="mt-4">
+        <nav aria-label="Page navigation" class="mt-4" data-aos="fade-left" data-aos-duration="800">
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
@@ -262,7 +292,8 @@
             <h3>No Buses Found</h3>
         </div>
         {% endif %}
-        <a href="{% url 'home' %}" class="btn btn-danger mt-2">Back to Home</a>
+        <a href="{% url 'home' %}" class="btn btn-danger mt-2" data-aos="fade-left" data-aos-duration="800">Back to
+            Home</a>
     </div>
 </div>
 <div class="modal fade" id="seatModal">

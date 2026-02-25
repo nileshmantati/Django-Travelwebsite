@@ -389,3 +389,58 @@
     padding: 10px 30px;
     font-size: 1.2rem;
 }
+
+:root {
+
+    --rb-red: #007bff;
+
+    /* Ye line add karein */
+
+    --rb-red: #d84e55;
+
+    /* ... baaki colors ... */
+
+}
+
+
+
+/* Loader CSS ko update karein */
+
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--rb-red);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Body hidden initially to prevent layout shift */
+body.loading {
+    overflow: hidden;
+}

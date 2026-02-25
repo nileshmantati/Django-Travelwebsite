@@ -8,10 +8,7 @@ urlpatterns = [
     path("register/", views.registration_view, name="register"),
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
-    path('flights/', views.coming_soon, {'service_name': 'flight'}, name='flight_booking'),
-    # path('trains/', views.coming_soon, {'service_name': 'train'}, name='train_booking'),
-    path('hotels/', views.coming_soon, {'service_name': 'hotel'}, name='hotel_booking'),
-    path('contact/', views.coming_soon, {'service_name': 'contact'}, name='contact'),
+    path('contact/', views.contact, name='contact'),
     path('my-bookings/', views.my_bookings, name='my_bookings'),
     path('cancel-booking/<str:booking_type>/<str:pk>/', views.cancel_booking, name='cancel_booking'),
 ]

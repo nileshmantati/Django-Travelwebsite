@@ -12,9 +12,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Toastify CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 
 <body>
+    <div id="preloader">
+        <div class="spinner"></div>
+    </div>
     {% include "components/navbar.html" %}
 
     {% block content %}
@@ -26,7 +30,32 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Toastify JS -->
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Page load hote hi body lock rahegi
+        document.body.classList.add('loading');
 
+        window.addEventListener('load', function () {
+            const preloader = document.getElementById('preloader');
+
+            // Thoda delay taaki animations smoothly ready ho jayein
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                    document.body.classList.remove('loading'); // Scroll enable karein
+
+                    // AOS tabhi chalega jab loader hatega
+                    AOS.init({
+                        duration: 900,
+                        once: true,
+                        offset: 100
+                    });
+                }, 500); // Fade out ke baad display none karein
+            }, 1000); // 1 second loader dikhayega
+        });
+    </script>
     {% if messages %}
     <script>
         {% for m in messages %}

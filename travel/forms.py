@@ -1,9 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-# accounts/forms.py
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
+from .models import Contact
 
 class SignupForm(UserCreationForm):
     email = forms.EmailField(
@@ -83,3 +83,14 @@ class LoginForm(AuthenticationForm):
             'placeholder': 'Password',
             'autocomplete': 'current-password'
         })
+        
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = ['name', 'email', 'subject', 'message']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email address'}),
+            'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Subject (e.g. Booking Inquiry)'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Your message', 'rows': 5}),
+        }

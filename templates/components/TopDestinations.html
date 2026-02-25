@@ -7,6 +7,69 @@
         height: 100%;
         object-fit: cover;
     }
+
+    /* Image zoom on hover */
+    .dest_box img {
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .dest_box:hover img {
+        transform: scale(1.1);
+    }
+
+    /* Red overlay smooth transition */
+    .dest_box::after {
+        transition: opacity 0.4s ease;
+    }
+
+    /* Destinations text glass effect */
+    .dest_text_center h3 {
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .dest_box:hover .dest_text_center h3 {
+        background: #dc3545;
+        /* Bootstrap Red on Hover */
+        transform: translateY(-5px);
+    }
+
+    /* Pulsating Effect for Book Now Button */
+    .btn-pulse {
+        animation: pulse-red 2s infinite;
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        transition: transform 0.3s ease;
+    }
+
+    @keyframes pulse-red {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        }
+
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 15px rgba(220, 53, 69, 0);
+        }
+
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+
+    /* Hover par animation fast ho jayegi */
+    .btn-pulse:hover {
+        animation: none;
+        transform: scale(1.1);
+        background-color: #c82333;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
 </style>
 {% endblock %}
 <!-- Top Destinations Sction Start  -->
@@ -19,7 +82,7 @@
         </div>
 
         <div class="dest-grid-container">
-            <div class="dest_left_main">
+            <div class="dest_left_main" data-aos="zoom-in-right" data-aos-duration="1000">
                 <div class="dest_box large">
                     <img src="{% static '/images/big-img.a49b935c.png' %}" alt="Offer">
                     <div class="dest_text_center">
@@ -29,26 +92,26 @@
                             <h6><span class="fs-2">%</span><span class="fs-2">Off</span></h6>
                         </div>
                         <h2 class="mb-4">Holiday packages</h2>
-                        <a href="#" class="btn btn-danger btn-book">Book now</a>
+                        <a href="#" class="btn btn-danger btn-book btn-pulse">Book now</a>
                     </div>
                 </div>
             </div>
 
             <div class="dest_right_grid">
                 <div class="dest_col">
-                    <div class="dest_box small">
+                    <div class="dest_box small" data-aos="fade-up" data-aos-delay="100">
                         <img src="{% static '/images/destination1.40c89fca.png' %}" alt="">
                         <div class="dest_text_center">
                             <h3>China</h3>
                         </div>
                     </div>
-                    <div class="dest_box small">
+                    <div class="dest_box small" data-aos="fade-up" data-aos-delay="200">
                         <img src="{% static '/images/destination2.54f9f938.png' %}" alt="">
                         <div class="dest_text_center">
                             <h3>Darjeeling</h3>
                         </div>
                     </div>
-                    <div class="dest_box small">
+                    <div class="dest_box small" data-aos="fade-up" data-aos-delay="300">
                         <img src="{% static '/images/destination3.ba50419e.png' %}" alt="">
                         <div class="dest_text_center">
                             <h3>Malaysia</h3>
@@ -56,19 +119,19 @@
                     </div>
                 </div>
                 <div class="dest_col">
-                    <div class="dest_box small">
+                    <div class="dest_box small" data-aos="fade-up" data-aos-delay="400">
                         <img src="{% static '/images/destination4.50780d51.png' %}" alt="">
                         <div class="dest_text_center">
                             <h3>Gangtok</h3>
                         </div>
                     </div>
-                    <div class="dest_box small">
+                    <div class="dest_box small" data-aos="fade-up" data-aos-delay="500">
                         <img src="{% static '/images/destination5.73428857.png' %}" alt="">
                         <div class="dest_text_center">
                             <h3>Thailand</h3>
                         </div>
                     </div>
-                    <div class="dest_box small">
+                    <div class="dest_box small" data-aos="fade-up" data-aos-delay="600">
                         <img src="{% static '/images/destination6.4540162c.png' %}" alt="">
                         <div class="dest_text_center">
                             <h3>Australia</h3>
@@ -76,19 +139,19 @@
                     </div>
                 </div>
                 <div class="dest_col">
-                    <div class="dest_box small">
+                    <div class="dest_box small" data-aos="fade-up" data-aos-delay="700">
                         <img src="{% static '/images/destination7.db797940.png' %}" alt="">
                         <div class="dest_text_center">
                             <h3>London</h3>
                         </div>
                     </div>
-                    <div class="dest_box small">
+                    <div class="dest_box small" data-aos="fade-up" data-aos-delay="800">
                         <img src="{% static '/images/destination8.03d4b7a9.png' %}" alt="">
                         <div class="dest_text_center">
                             <h3>USA</h3>
                         </div>
                     </div>
-                    <div class="dest_view_all d-flex ">
+                    <div class="dest_view_all d-flex" data-aos="fade-up" data-aos-delay="900">
                         <a href="#"
                             class="btn btn-danger btn-lg w-100 d-flex align-items-end justify-content-center fs-6">View
                             all</a>

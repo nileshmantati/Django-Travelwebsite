@@ -5,9 +5,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-    /* Active tab style */
     .tab-link.active-tab {
-        border-bottom: 4px solid #dc3545 !important;
         color: black !important;
         font-weight: bold !important;
     }
@@ -15,7 +13,6 @@
     .tab-link {
         color: black;
         cursor: pointer;
-        /* padding-bottom: 5px; */
         transition: all ease-in-out 100ms;
     }
 
@@ -25,36 +22,86 @@
         display: flex;
         justify-content: center;
     }
+
+    /* 1. Main Search Box Animation */
+    .bg-white.rounded-4 {
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    /* 2. Tab Underline Slide Effect */
+    .tab-link {
+        position: relative;
+        transition: color 0.3s ease;
+    }
+
+    .tab-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 4.5px;
+        background: #dc3545;
+        transition: width 0.3s ease;
+        border-radius: 10px;
+    }
+
+    .tab-link.active-tab::after {
+        width: 100%;
+    }
+
+    /* 3. Input Group Glow on Focus */
+    .row.border.rounded-3 {
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .row.border.rounded-3:focus-within {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1);
+    }
+
+    /* 4. Swap Button Animation Improvement */
+    .swap-btn {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .swap-btn:active {
+        transform: scale(0.8) rotate(180deg);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="main_search_container d-flex justify-content-center align-items-center">
     <div class="search_bg"></div>
-    <div class="container d-flex justify-content-center align-items-center">
+    <div class="container d-flex justify-content-center align-items-center" data-aos="fade-up" data-aos-duration="600">
         <div class="bg-white rounded-4 shadow p-3 p-md-4 w-100" style="max-width: 80%;">
             <!-- Tabs -->
             <div class="d-flex flex-wrap justify-content-start mb-3 column-gap-5 row-gap-3 mb-4">
-                <a href="javascript:void(0)" onclick="switchSearch('bus',this)"
+                <a href="javascript:void(0)" onclick="switchSearch('bus',this)" data-aos="fade-right"
+                    data-aos-delay="200"
                     class="fw-semibold text-decoration-none tab-link active-tab pb-2 d-flex align-items-center gap-1">
                     <i class="bi bi-bus-front-fill fs-3"></i> Buses
                 </a>
-                <a href="javascript:void(0)" onclick="switchSearch('flight',this)"
+                <a href="javascript:void(0)" onclick="switchSearch('flight',this)" data-aos="fade-right"
+                    data-aos-delay="300"
                     class="fw-semibold text-decoration-none tab-link d-flex align-items-center gap-1 ">
                     <i class="bi bi-airplane fs-3"></i> Flights
                 </a>
-                <a href="javascript:void(0)" onclick="switchSearch('train',this)"
+                <a href="javascript:void(0)" onclick="switchSearch('train',this)" data-aos="fade-right"
+                    data-aos-delay="400"
                     class="fw-semibold text-decoration-none tab-link d-flex align-items-center gap-1 ">
                     <i class="bi bi-train-front fs-3"></i> Trains
                 </a>
-                <a href="javascript:void(0)" onclick="switchSearch('hotel',this)"
+                <a href="javascript:void(0)" onclick="switchSearch('hotel',this)" data-aos="fade-right"
+                    data-aos-delay="500"
                     class="fw-semibold text-decoration-none tab-link d-flex align-items-center gap-1 ">
                     <i class="bi bi-building fs-3"></i> Hotels
                 </a>
             </div>
 
             <!-- Search Form -->
-            <form method="get" action="{% url 'search' %}">
+            <form method="get" action="{% url 'search' %}" data-aos="zoom-in" data-aos-delay="600">
                 <div class="row g-2 g-md-0 border rounded-3 bg-light align-items-center position-relative">
                     <input type="hidden" name="type" id="inputType" value="bus">
                     <!-- FROM -->
@@ -137,32 +184,38 @@
 
     // SwitchSearch
     function switchSearch(search_type, element) {
-        document.getElementById('inputType').value = search_type;
-        const fromIcon = document.getElementById('fromIcon');
-        const toIcon = document.getElementById('toIcon');
+        const formRow = document.querySelector('.row.border.rounded-3');
+        formRow.style.opacity = '0.5';
+        setTimeout(() => {
+            document.getElementById('inputType').value = search_type;
+            const fromIcon = document.getElementById('fromIcon');
+            const toIcon = document.getElementById('toIcon');
 
-        if (search_type === 'bus') {
-            document.getElementById('fromCity').placeholder = 'Leaving From';
-            document.getElementById('toCity').placeholder = 'Going To';
-            fromIcon.className = 'bi bi-record-circle fa-lg me-2 text-primary';
-            toIcon.className = 'bi bi-geo-alt-fill fa-lg me-2 text-danger';
-        } else if (search_type === 'flight') {
-            document.getElementById('fromCity').placeholder = 'From';
-            document.getElementById('toCity').placeholder = 'To';
-            fromIcon.className = 'fa-solid fa-plane-departure fa-lg me-2 text-danger';
-            toIcon.className = 'fa-solid fa-plane-arrival fa-lg me-2 text-danger';
-        } else if (search_type === 'train') {
-            document.getElementById('fromCity').placeholder = 'From Station';
-            document.getElementById('toCity').placeholder = 'To Station';
-            fromIcon.className = 'bi bi-train-front-fill fa-lg me-2 text-success';
-            toIcon.className = 'bi bi-geo-fill fa-lg me-2 text-danger';
-        }
-        else if (search_type === 'hotel') {
-            document.getElementById('fromCity').placeholder = 'From Station';
-            document.getElementById('toCity').placeholder = 'To Station';
-            fromIcon.className = 'bi bi-buildings-fill fa-lg me-2 text-warning';
-            toIcon.className = 'bi bi-geo-alt fa-lg me-2';
-        }
+            if (search_type === 'bus') {
+                document.getElementById('fromCity').placeholder = 'Leaving From';
+                document.getElementById('toCity').placeholder = 'Going To';
+                fromIcon.className = 'bi bi-record-circle fa-lg me-2 text-primary';
+                toIcon.className = 'bi bi-geo-alt-fill fa-lg me-2 text-danger';
+            } else if (search_type === 'flight') {
+                document.getElementById('fromCity').placeholder = 'From';
+                document.getElementById('toCity').placeholder = 'To';
+                fromIcon.className = 'fa-solid fa-plane-departure fa-lg me-2 text-danger';
+                toIcon.className = 'fa-solid fa-plane-arrival fa-lg me-2 text-danger';
+            } else if (search_type === 'train') {
+                document.getElementById('fromCity').placeholder = 'From Station';
+                document.getElementById('toCity').placeholder = 'To Station';
+                fromIcon.className = 'bi bi-train-front-fill fa-lg me-2 text-success';
+                toIcon.className = 'bi bi-geo-fill fa-lg me-2 text-danger';
+            }
+            else if (search_type === 'hotel') {
+                document.getElementById('fromCity').placeholder = 'From Station';
+                document.getElementById('toCity').placeholder = 'To Station';
+                fromIcon.className = 'bi bi-buildings-fill fa-lg me-2 text-warning';
+                toIcon.className = 'bi bi-geo-alt fa-lg me-2';
+            }
+            formRow.style.opacity = '1';
+            formRow.style.transition = 'opacity 0.3s ease';
+        }, 150);
         document.querySelectorAll('.tab-link').forEach(link => {
             link.classList.remove('active-tab');
             link.classList.remove('text-black', 'fw-bold'); // Cleanup

@@ -12,6 +12,12 @@ from bus_app.views import bus_search
 from train_app.views import train_search
 from flight_app.views import flight_search
 from django.http import JsonResponse
+from .forms import ContactForm
+from django.core.mail import send_mail
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 # Create your views here.
 def universal_search(request):
@@ -85,6 +91,54 @@ def logout_view(request):
 def coming_soon(request, service_name):
     return render(request, 'components/coming_soon.html', {'service_name': service_name.capitalize()})
 
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            contact_instance = form.save()
+            
+            # User Data
+            user_email = contact_instance.email
+            user_name = contact_instance.name
+            user_subject = contact_instance.subject
+            from_email = settings.EMAIL_HOST_USER
+
+            try:
+                # Admin Data for sending email to admin
+                admin_subject = f"New Inquiry: {user_subject}"
+                admin_content = f"Name: {user_name}\nEmail: {user_email}\nSubject: {user_subject}\nMessage: {contact_instance.message}"
+                
+                send_mail(
+                    admin_subject,
+                    admin_content,
+                    from_email,
+                    [settings.EMAIL_HOST_USER],
+                    fail_silently=False,
+                )
+
+                # User Data for sending email to user
+                html_subject = 'We have received your inquiry - TravelGo'
+                html_message = render_to_string('emails/thank_you.html', {
+                    'name': user_name,
+                    'subject': user_subject
+                })
+                plain_message = strip_tags(html_message)
+
+                msg = EmailMultiAlternatives(html_subject, plain_message, from_email, [user_email])
+                msg.attach_alternative(html_message, "text/html")
+                msg.send()
+
+                messages.success(request, "Thank you! Your inquiry has been successfully submitted.")
+                
+            except Exception as e:
+                messages.warning(request, "Your inquiry was saved, but we encountered a technical issue while sending the confirmation email.")
+                print(f"Email Error: {e}")
+
+            return redirect('contact')
+    else:
+        form = ContactForm()
+        
+    return render(request, 'contactpage.html', {'form': form})
 
 @login_required(login_url='login')
 def my_bookings(request):
