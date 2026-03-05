@@ -4,7 +4,7 @@ from bus_app.models import City
 from django.db import transaction
 
 class TrainModel(models.Model):
-    train_number = models.CharField(max_length=10, unique=True)
+    train_number = models.CharField(max_length=30, unique=True)
     train_name = models.CharField(max_length=100)
     source = models.ForeignKey(City, on_delete=models.CASCADE, related_name="train_source")
     destination = models.ForeignKey(City, on_delete=models.CASCADE, related_name="train_destination")
@@ -31,7 +31,7 @@ class TrainCoach(models.Model):
         ('2S', 'Second Sitting'),
     ]
     train = models.ForeignKey(TrainModel, on_delete=models.CASCADE, related_name="coaches")
-    coach_type = models.CharField(max_length=10, choices=COACH_CHOICES)
+    coach_type = models.CharField(max_length=30, choices=COACH_CHOICES)
     total_seats = models.PositiveIntegerField()
     available_seats = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -63,12 +63,12 @@ class TrainBooking(models.Model):
         null=True,
         blank=True
     )
-    seat_number = models.CharField(max_length=10)
-    booking_status = models.CharField(max_length=20,
+    seat_number = models.CharField(max_length=30)
+    booking_status = models.CharField(max_length=30,
         choices=BOOKING_STATUS,
         default='PENDING')
     payment_status = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=PAYMENT_STATUS,
         default='PENDING')
     booked_at = models.DateTimeField(auto_now_add=True,null=True)

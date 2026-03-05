@@ -9,14 +9,14 @@ from django.db.models import F
 # Create your models here.
 class Airline(models.Model):
     name = models.CharField(max_length=100)
-    code = models.CharField(max_length=10, unique=True)
+    code = models.CharField(max_length=30, unique=True)
     logo = models.ImageField(upload_to='airline_logos/', null=True, blank=True)
 
     def __str__(self):
         return self.name
     
 class FlightModel(models.Model):
-    flight_number = models.CharField(max_length=10, unique=True)
+    flight_number = models.CharField(max_length=30, unique=True)
     source = models.ForeignKey(City, on_delete=models.CASCADE, related_name="flight_source")
     destination = models.ForeignKey(City, on_delete=models.CASCADE, related_name="flight_destination")
     
@@ -45,7 +45,7 @@ class FlightClass(models.Model):
         ('FIRST_CLASS', 'First Class'),
     ]
     flight = models.ForeignKey(FlightModel, on_delete=models.CASCADE, related_name="classes")
-    class_type = models.CharField(max_length=20, choices=CLASS_CHOICES)
+    class_type = models.CharField(max_length=30, choices=CLASS_CHOICES)
     total_seats = models.PositiveIntegerField()
     available_seats = models.PositiveIntegerField()
     base_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -87,7 +87,7 @@ class FlightBooking(models.Model):
     )
     passport_number = models.CharField(max_length=20, null=True, blank=True) # International flights ke liye
     
-    seat_number = models.CharField(max_length=10, blank=True)
+    seat_number = models.CharField(max_length=30, blank=True)
     price_at_booking = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     booking_status = models.CharField(max_length=20,choices=BOOKING_STATUS, default='PENDING')
     payment_status = models.CharField(max_length=20,choices=PAYMENT_STATUS, default='PENDING')

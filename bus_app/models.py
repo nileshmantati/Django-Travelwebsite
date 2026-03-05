@@ -96,7 +96,7 @@ class BusBooking(models.Model):
         ('PENDING', 'Pending'),
         ('SUCCESS', 'Success'),
         ('FAILED', 'Failed'),
-        ('CANCELLED', 'Cancelled'),
+        ('CANCELLED', 'Cancelled'), 
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='bookings')
     bus = models.ForeignKey(BusModel,on_delete=models.CASCADE)
