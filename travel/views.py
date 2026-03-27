@@ -13,9 +13,8 @@ from train_app.views import train_search
 from flight_app.views import flight_search
 from django.http import JsonResponse
 from .forms import ContactForm
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
