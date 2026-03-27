@@ -88,9 +88,10 @@ WSGI_APPLICATION = 'Travel_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # settings.py ke top par kahin likh dein:
+ON_RENDER = 'RENDER' in os.environ
 USE_POSTGRES = True  # SQLite chahiye toh False kar dein
 
-if USE_POSTGRES:
+if ON_RENDER:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',

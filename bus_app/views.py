@@ -7,6 +7,8 @@ from .models import BusBooking
 from django.contrib.auth.decorators import login_required
 from .forms import PassengerForm
 from django.core.paginator import Paginator
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 
 def bus_search(request):
     bus_list = []
@@ -94,6 +96,9 @@ def bus_search(request):
             'travel_date': travel_date or now().date(),
             'page_obj': page_obj,
         }
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            html = render_to_string('components/bus_list_partial.html', context)
+            return JsonResponse({'html': html})
         return render(request, 'search_bus.html', context)
     
     messages.error(request, "Please enter both From and To cities")

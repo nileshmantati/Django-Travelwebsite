@@ -1,0 +1,96 @@
+{% if page_obj %}
+{% for data in page_obj %}
+<div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}"
+    data-aos-duration="800">
+    <div class="card-body">
+        <div class="row align-items-center row-gap-3">
+            <div class="col-md-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bus-icon-wrapper">
+                        <i class="bi bi-bus-front fs-4 text-danger"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="bus-name fs-5 text-capitalize">{{data.bus.bus_name}}</div>
+                        <span class="bus-tag">{{ data.bus.bus_type }}</span>
+                        <span class="bus-tag">{{ data.bus.bus_seating_type }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 text-center">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold fs-5">{{data.bus.departure_time|time:"h:iA" }}</div>
+                        <small class="text-muted fs-6 text-capitalize">{{ data.bus.source }}</small>
+                    </div>
+
+                    <span class="rb-duration">{{ data.duration }}</span>
+
+                    <div>
+                        <div class="fw-bold fs-5">{{ data.bus.arrival_time|time:"h:iA" }}</div>
+                        <small class="text-muted fs-6 text-capitalize">{{ data.bus.destination }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                <div class="price">
+                    <span class="fs-6 fw-medium">From</span> <strong class="fs-5">₹{{data.bus.price}}</strong>
+                </div>
+                <div class="seat-box d-inline-flex flex-column border p-2 mt-2 text-center">
+                    {% if data.bus.available_seats > 0 %}
+
+                    {% if request.user.is_authenticated %}
+                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#seatModal"
+                        onclick="loadSeats({{ data.bus.id }})">
+                        View Seats
+                    </button>
+                    {% else %}
+                    <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                        class="btn btn-outline-danger fw-semibold">
+                        Login to Book
+                    </a>
+                    {% endif %}
+
+                    <div class="left_seats mt-2 text-success fw-medium">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        {{ data.bus.available_seats }} Seats Left
+                    </div>
+
+                    {% if data.bus.available_seats <= 5 %} <div class="seat-low">
+                        Only {{ data.bus.available_seats }} seats left!
+                </div>
+                {% endif %}
+            </div>
+
+
+            {% else %}
+            <button class="btn btn-secondary" disabled>
+                Sold Out
+            </button>
+            <div class="left_seats mt-2 text-danger fw-medium">
+                <i class="bi bi-x-circle-fill"></i>
+                No Seats Available
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>
+{% endfor %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link text-danger"
+                href="?page={{ page_obj.previous_page_number }}&...">Previous</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }}</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link text-danger" href="?page={{ page_obj.next_page_number }}&...">Next</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% else %}
+<div class="text-center">
+    <h3>No Buses Found</h3>
+</div>
+{% endif %}
