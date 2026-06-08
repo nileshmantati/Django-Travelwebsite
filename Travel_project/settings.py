@@ -42,13 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    # 'travel',
-    'bus_app',
-    'train_app',
+    'travel',
+    # 'bus_app',
+    # 'train_app',
     'flight_app',
     'user_dashboard',
     'django_crontab',
-    'travel.apps.TravelConfig',
+    'bus_app.apps.BusAppConfig',
+    'train_app.apps.TrainAppConfig',
     # 'cloudinary',
     # 'cloudinary_storage',
 ]
@@ -91,8 +92,11 @@ WSGI_APPLICATION = 'Travel_project.wsgi.application'
 # settings.py ke top par kahin likh dein:
 ON_RENDER = 'RENDER' in os.environ
 USE_POSTGRES = True  # SQLite chahiye toh False kar dein
-
-if ON_RENDER:
+load_dotenv()
+import os
+print("Using PostgreSQL:", ON_RENDER)
+print("Password:", os.getenv("POSTGRES_PASSWORD"))
+if ON_RENDER or USE_POSTGRES:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -186,7 +190,6 @@ CRONJOBS = [
 LOGIN_URL = 'login'
 
 # Email settings
-load_dotenv()
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

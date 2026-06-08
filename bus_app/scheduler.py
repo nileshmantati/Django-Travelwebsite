@@ -4,7 +4,7 @@ from bus_app.models import BusModel,City
 from datetime import datetime, timedelta
 import random,string
 
-def insert_weekly_data():
+def insert_weekly_bus_data():
     today = timezone.localdate()
     BusModel.objects.filter(travel_date__lt=today, is_active=True).update(is_active=False)
     
@@ -93,18 +93,18 @@ def insert_weekly_data():
                         is_active=True
                     )
 
-    print("Sunday midnight data inserted")
+    print("Weekly Bus data inserted successfully!")
     
 def start():
     scheduler = BackgroundScheduler()
     
     # Every Sunday at 1:00 AM
     scheduler.add_job(
-        insert_weekly_data,
+        insert_weekly_bus_data,
         trigger='cron',
         day_of_week='sun',
         hour=1,
         minute=0
     )
-    # scheduler.add_job(insert_weekly_data, 'interval', seconds=10)  # Run every 24 hours
+    # scheduler.add_job(insert_weekly_bus_data)  # Run every 24 hours
     scheduler.start()
