@@ -2,10 +2,17 @@ from bus_app.models import City
 from .models import FlightModel, Airline, FlightClass
 from datetime import datetime, timedelta
 from django.utils import timezone
+from apscheduler.schedulers.background import BackgroundScheduler
 
-def insert_weekly_data():
+def insert_weekly_flight_data():
     today = timezone.localdate()
+    
+    # 1. Mark all past flights as inactive
     FlightModel.objects.filter(travel_date__lt=today, is_active=True).update(is_active=False)
+    
+    # 2. Delete flights older than 7 days
+    delete_before = today - timedelta(days=7)
+    FlightModel.objects.filter(travel_date__lt=delete_before).delete()
 
     routes = [
         ("Delhi","Mumbai"),
@@ -56,8 +63,14 @@ def insert_weekly_data():
             for data in flight_data:
                 # Create a unique flight number for each date and route
                 # Format: 6E-501-DELBOM-1602 (FlightNo-Route-DayMonth)
-                unique_number = f"{data['flight_no_prefix']}-{source.id}{destination.id}-{travel_date.strftime('%d%m')}"
-
+                # unique_number = f"{data['flight_no_prefix']}-{source.id}{destination.id}-{travel_date.strftime('%d%m')}"
+                unique_number = (
+                    f"{data['flight_no_prefix']}-"
+                    f"{source.name[:3].upper()}"
+                    f"{destination.name[:3].upper()}-"
+                    f"{travel_date.strftime('%d%m%Y')}"
+                )
+                
                 dep_time = timezone.make_aware(
                     datetime.combine(travel_date, datetime.strptime(data["departure_time"], "%H:%M").time())
                 )
@@ -80,12 +93,29 @@ def insert_weekly_data():
                 # 2. Flight ke Classes Create karein (Agar Flight abhi bani hai)
                 if created:
                     for f_class in data["classes"]:
-                        FlightClass.objects.create(
-                            flight=flight,
-                            class_type=f_class["type"],
-                            total_seats=f_class["seats"],
-                            available_seats=f_class["seats"],
-                            base_price=f_class["price"]
-                        )
+                        FlightClass.objects.get_or_create(
+                        flight=flight,
+                        class_type=f_class["type"],
+                        defaults={
+                            "total_seats": f_class["seats"],
+                            "available_seats": f_class["seats"],
+                            "base_price": f_class["price"]
+                        }
+                    )
 
     print("Weekly Flight data inserted successfully!")
+    
+def start():
+    scheduler = BackgroundScheduler()
+    
+    # Every Sunday at 1:00 AM
+    scheduler.add_job(
+        insert_weekly_flight_data,
+        trigger='cron',
+        day_of_week='sun',
+        hour=1,
+        minute=25
+    )
+    
+    print("Flight Scheduler Started")
+    scheduler.start()
