@@ -106,6 +106,7 @@ def start():
         hour=1,
         minute=0
     )
+    
     print("Bus Scheduler Started")
     # scheduler.add_job(insert_weekly_bus_data)  # Run every 24 hours
     scheduler.start()

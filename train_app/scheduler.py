@@ -119,6 +119,7 @@ def start():
         hour=1,
         minute=0
     )
+    
     print("Train Scheduler Started")
     # scheduler.add_job(insert_weekly_train_data)  # Run every 24 hours
     scheduler.start()
