@@ -6,8 +6,14 @@ import random,string
 
 def insert_weekly_bus_data():
     today = timezone.localdate()
+    
+    # 1. Mark all past Buses as inactive
     BusModel.objects.filter(travel_date__lt=today, is_active=True).update(is_active=False)
     
+    # 2. Delete buses older than 7 days
+    delete_before = today - timedelta(days=7)
+    BusModel.objects.filter(travel_date__lt=delete_before).delete()
+
     routes = [
         ("Delhi","Mumbai"),
         ("Mumbai", "Pune"),

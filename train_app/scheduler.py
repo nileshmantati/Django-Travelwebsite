@@ -5,7 +5,13 @@ from django.utils import timezone
 
 def insert_weekly_train_data():
     today = timezone.localdate()
+    
+    # 1. Mark all past Trains as inactive
     TrainModel.objects.filter(travel_date__lt=today, is_active=True).update(is_active=False)
+
+    # 2. Delete trains older than 7 days
+    delete_before = today - timedelta(days=7)
+    TrainModel.objects.filter(travel_date__lt=delete_before).delete()
 
     routes = [
         ("Delhi","Mumbai"),
@@ -117,7 +123,7 @@ def start():
         trigger='cron',
         day_of_week='sun',
         hour=1,
-        minute=0
+        minute=10
     )
     
     print("Train Scheduler Started")
