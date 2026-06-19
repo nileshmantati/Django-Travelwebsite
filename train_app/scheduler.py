@@ -112,13 +112,19 @@ def start():
     scheduler = BackgroundScheduler()
     
     # Every Sunday at 1:00 AM
+    # scheduler.add_job(
+    #     insert_weekly_train_data,
+    #     trigger='cron',
+    #     day_of_week='sun',
+    #     hour=1,
+    #     minute=0
+    # )
     scheduler.add_job(
         insert_weekly_train_data,
-        trigger='cron',
-        day_of_week='sun',
-        hour=1,
-        minute=0
+        trigger='interval',
+        minutes=2
     )
+    print("Train Scheduler Started")
     # scheduler.add_job(insert_weekly_train_data)  # Run every 24 hours
     scheduler.start()
 
