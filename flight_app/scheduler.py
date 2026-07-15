@@ -49,7 +49,7 @@ def insert_weekly_flight_data():
         }
     ]
 
-    for day in range(7):
+    for day in range(31):
         travel_date = today + timedelta(days=day)
 
         for source_name, destination_name in routes:
@@ -116,6 +116,6 @@ def start():
         hour=1,
         minute=25
     )
+    # scheduler.add_job(insert_weekly_flight_data)
     
-    print("Flight Scheduler Started")
     scheduler.start()

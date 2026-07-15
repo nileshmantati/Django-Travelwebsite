@@ -47,7 +47,7 @@ def insert_weekly_train_data():
         }
     ]
 
-    for day in range(7):
+    for day in range(31):
         travel_date = today + timedelta(days=day)
 
         for source_name, destination_name in routes:
@@ -125,7 +125,7 @@ def start():
         hour=1,
         minute=10
     )
-    
-    print("Train Scheduler Started")
+    # scheduler.add_job(insert_weekly_train_data)
+
     scheduler.start()
 

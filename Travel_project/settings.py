@@ -94,8 +94,7 @@ ON_RENDER = 'RENDER' in os.environ
 USE_POSTGRES = True  # SQLite chahiye toh False kar dein
 load_dotenv()
 import os
-print("Using PostgreSQL:", ON_RENDER)
-print("Password:", os.getenv("POSTGRES_PASSWORD"))
+
 if ON_RENDER or USE_POSTGRES:
     DATABASES = {
         'default': {
