@@ -48,7 +48,7 @@ def insert_weekly_bus_data():
             "rating":3.5,
         }
     ]
-    for day in range(7):
+    for day in range(31):
         travel_date = today + timedelta(days=day)
         
         for source_name, destination_name in routes:
@@ -112,6 +112,6 @@ def start():
         hour=1,
         minute=0
     )
+    # scheduler.add_job(insert_weekly_bus_data)
     
-    print("Bus Scheduler Started")
     scheduler.start()
