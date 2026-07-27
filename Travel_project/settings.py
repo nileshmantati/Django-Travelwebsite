@@ -58,7 +58,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -93,7 +92,6 @@ WSGI_APPLICATION = 'Travel_project.wsgi.application'
 ON_RENDER = 'RENDER' in os.environ
 USE_POSTGRES = True  # SQLite chahiye toh False kar dein
 load_dotenv()
-import os
 
 if ON_RENDER or USE_POSTGRES:
     DATABASES = {
@@ -153,8 +151,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -183,7 +179,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CRONJOBS = [
-    ('0 0 * * 0', 'bus_app.cron.insert_weekly_data'),
+    ('0 0 * * 0', 'bus_app.scheduler.insert_weekly_bus_data'),
 ]
 
 LOGIN_URL = 'login'

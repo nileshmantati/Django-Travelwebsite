@@ -58,18 +58,16 @@ def train_search(request):
             
         if price:
             if price == '0-500':
-                trains = trains.filter(price__lt=500)
+                trains = trains.filter(coaches__price__lt=500)
             elif price == '500-1000':
-                trains = trains.filter(price__gte=500, price__lte=1000)
+                trains = trains.filter(coaches__price__gte=500, coaches__price__lte=1000)
             elif price == '1000+':
-                trains = trains.filter(price__gt=1000)
-
-        if rating:
-            trains = trains.filter(rating__gte=rating)
+                trains = trains.filter(coaches__price__gt=1000)
 
         if seat_type:
-            trains = trains.filter(bus_seating_type=seat_type)
+            trains = trains.filter(coaches__coach_type=seat_type)
             
+        trains = trains.distinct()
         for train in trains:
             duration = train.arrival_time - train.departure_time
             
@@ -133,8 +131,6 @@ def book_train(request):
                     seat_number=assigned_seat
                     # seat_number=f"{coach.coach_type}-{coach.available_seats}"
                 )
-                coach.available_seats -= 1
-                coach.save()
                 messages.success(request, f"Booking successful! Your seat is {assigned_seat}")
                 return redirect('my_bookings')
                 

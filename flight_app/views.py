@@ -57,18 +57,16 @@ def flight_search(request):
             
         if price:
             if price == '0-500':
-                flights = flights.filter(price__lt=500)
+                flights = flights.filter(classes__base_price__lt=500)
             elif price == '500-1000':
-                flights = flights.filter(price__gte=500, price__lte=1000)
+                flights = flights.filter(classes__base_price__gte=500, classes__base_price__lte=1000)
             elif price == '1000+':
-                flights = flights.filter(price__gt=1000)
-
-        if rating:
-            flights = flights.filter(rating__gte=rating)
+                flights = flights.filter(classes__base_price__gt=1000)
 
         if seat_type:
-            flights = flights.filter(bus_seating_type=seat_type)
+            flights = flights.filter(classes__class_type=seat_type)
             
+        flights = flights.distinct()
         for flight in flights:
             duration = flight.arrival_time - flight.departure_time
             
@@ -138,8 +136,6 @@ def book_flight(request):
                         seat_number=assigned_seat,
                         price_at_booking=flight_class.base_price
                 )
-                flight_class.available_seats -= 1
-                flight_class.save()
                 messages.success(request, f"Booking successful! Your seat is {assigned_seat}")
                 return redirect('my_bookings')
             

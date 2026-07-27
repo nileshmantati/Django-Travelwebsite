@@ -81,7 +81,7 @@ class TrainBooking(models.Model):
             self.booking_status = 'CANCELLED'
             self.payment_status = 'CANCELLED'
             self.coach.available_seats += 1  
-            self.train.save()
+            self.coach.save()
             self.save()
             
     def save(self, *args, **kwargs):

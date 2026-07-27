@@ -99,7 +99,7 @@ class FlightBooking(models.Model):
         with transaction.atomic():
             # Use F() expression to prevent race conditions during cancellation
             FlightClass.objects.filter(id=self.flight_class.id).update(available_seats=F('available_seats') + 1)
-            self.flight_class.save()
+            self.flight_class.refresh_from_db()
             
             self.booking_status = 'CANCELLED'
             self.payment_status = 'CANCELLED'
@@ -110,7 +110,7 @@ class FlightBooking(models.Model):
             self.booking_id = str(uuid.uuid4().hex[:10].upper())
         
         # Atomic transaction for seat management
-        if not self._state.adding:
+        if self.pk is None:
             with transaction.atomic():
                 selected_class = FlightClass.objects.select_for_update().get(id=self.flight_class.id)
                 if selected_class.available_seats > 0:
