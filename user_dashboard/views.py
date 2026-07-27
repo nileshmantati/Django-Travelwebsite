@@ -2,6 +2,7 @@ from django.shortcuts import render,get_object_or_404,redirect
 from bus_app.models import BusBooking
 from train_app.models import TrainBooking
 from flight_app.models import FlightBooking
+from travel.models import Profile
 from django.contrib.auth.models import User
 from user_dashboard.forms import UserProfileForm, ProfileForm
 from django.contrib import messages
@@ -27,23 +28,24 @@ def user_dashboard(request):
     confirmed_bus = BusBooking.objects.filter(user=user, booking_status='CONFIRMED').count()
     all_bus_trips = BusBooking.objects.filter(user=user).count()
     confirmed_train = TrainBooking.objects.filter(user=user, booking_status='CONFIRMED').count()
+    confirmed_flight = FlightBooking.objects.filter(user=user, booking_status='CONFIRMED').count()
     context = {
-        'total_trips': confirmed_bus + confirmed_train, # Combined confirmed trips
+        'total_trips': confirmed_bus + confirmed_train + confirmed_flight, # Combined confirmed trips
         'My_bus_trips': all_bus_trips,
         'My_train_trips': confirmed_train,
+        'My_flight_trips': confirmed_flight,
     }
     return render(request, 'user_dashboard/user_dashboard.html',context)
 
 @login_required
 def user_profile(request):
     user = request.user
-    profile = getattr(user, 'profile', None)
+    profile, _ = Profile.objects.get_or_create(user=user, defaults={'phone': '', 'address': ''})
     
     if request.method == 'POST':
         if 'profile_img' in request.FILES:
-            if profile:
-                profile.profile_img = request.FILES['profile_img']
-                profile.save()
+            profile.profile_img = request.FILES['profile_img']
+            profile.save()
             messages.success(request, "Profile updated successfully!")
             return redirect('user_profile')
         
@@ -61,7 +63,7 @@ def edit_profile(request,pk):
         raise PermissionDenied
 
     user = get_object_or_404(User, pk=pk)
-    profile = getattr(user, 'profile', None)
+    profile, _ = Profile.objects.get_or_create(user=user, defaults={'phone': '', 'address': ''})
     
     if request.method == 'POST':
         user_form = UserProfileForm(request.POST, instance=user)

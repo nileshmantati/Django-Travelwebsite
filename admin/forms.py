@@ -3,7 +3,6 @@ from bus_app.models import BusModel,City
 from train_app.models import TrainModel, TrainCoach
 from flight_app.models import FlightModel,FlightClass
 from django.contrib.auth.models import User
-import ast
 
 class BusForm(forms.ModelForm):
     class Meta:
@@ -77,7 +76,7 @@ class TrainForm(forms.ModelForm):
         super(TrainForm, self).__init__(*args, **kwargs)
         if self.instance and self.instance.runs_on:
             clean_str = self.instance.runs_on.replace("[", "").replace("]", "").replace("'", "").replace('"', "")
-            self.initial['runs_on'] = [day.strip() for day in self.instance.runs_on.split(',')]
+            self.initial['runs_on'] = [day.strip() for day in clean_str.split(',')]
             print("Initial runs_on set to:", self.initial['runs_on'])
 
     def clean_runs_on(self):

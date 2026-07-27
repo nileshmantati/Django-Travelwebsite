@@ -150,7 +150,8 @@ def edit_bus(request,pk):
         else:
             messages.error(request, "Please correct the errors below.")
             print("Form Errors:", form.errors)
-    form = BusForm(instance=bus)
+    else:
+        form = BusForm(instance=bus)
     return render(request, 'dashboard/edit_bus.html', {'form': form, 'title': 'Edit Bus'})
 
 @login_required
@@ -254,6 +255,7 @@ def edit_train(request,pk):
             train_instance = form.save()
             formset.instance = train_instance
             formset.save()
+            messages.success(request, "Train updated successfully!")
             return redirect('train_list')
     else:
         form = TrainForm(instance=train)
@@ -367,7 +369,7 @@ def edit_flight(request,pk):
             flight_instance = form.save()
             formset.instance = flight_instance
             formset.save()
-            messages.success(request,"Flight added successfully!")
+            messages.success(request,"Flight updated successfully!")
             return redirect('flight_list')
     else:
         form = FlightForm(instance=flight)
@@ -481,7 +483,8 @@ def edit_user(request,pk):
         else:
             messages.error(request, "Please correct the errors below.")
             print("Form Errors:", form.errors)
-    form = UserForm(instance=user)
+    else:
+        form = UserForm(instance=user)
     return render(request, 'dashboard/edit_user.html', {'form': form, 'title': 'Edit User'})
 
 @login_required
